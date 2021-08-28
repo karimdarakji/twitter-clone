@@ -1,14 +1,15 @@
-import Header from './header';
+import Header from '../../Components/Header/Header';
 import {useEffect, useState} from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import {Button} from 'react-bootstrap';
 import {IoHeartOutline,IoHeart,IoChatbubbleEllipsesOutline} from 'react-icons/io5';
 
+import user from '../../public/user.svg'
 
-function Home() {
+
+export default function Home(props) {
     
-    const history = useHistory();
-    if(!localStorage.getItem('user-info')) history.push('/register')
+   /*  if(!localStorage.getItem('user-info')) history.push('/register')
     let user = JSON.parse(localStorage.getItem('user-info'));
     const name = user.name;
     const tweetid = user.id;
@@ -140,15 +141,25 @@ function Home() {
           ...previnputHidden,
           [id]: !previnputHidden[id]
       }));
-    }
+    } */
     //const inputClass = inputHidden ? 'hide' : '';
 //console.warn(getComment);
     return(
         <div>
-            <Header />
-            <div style={{marginTop:10}}>
-            <h5 style={{}}>Home</h5>
-            
+            <div className="tweet-box">
+                <div className="d-flex">
+                    <img className="slidesvg" src={user} alt="profile picture" />
+                    <div>What's happening?</div>
+                </div>
+                <div className="image-tweet">
+                    <div className="d-flex">
+                        <img width="20" height="20" src={user} alt="upload image" />
+                    </div>
+                    <Button className="d-block py-1 px-3 ml-auto" style={{background:'#1da1f2',fontWeight:'bold', borderRadius:'20px'}} >Tweet</Button>
+
+                </div>
+            </div>
+            {/* 
             <div style={{display:'flex',justifyContent:'center'}}>
             <img src={"http://localhost:8000/"+user.profile_picture} width="30" height="30" style={{borderRadius:10}}/>
             <textarea style={{marginLeft:10,}} rows='5' cols='50' onChange={(e)=>setText(e.target.value)} value={text} placeholder="What's on your mind?"/>
@@ -266,11 +277,8 @@ function Home() {
                     
                     )
                 }
-            </div>
-            </div>
+            </div> */}
         
         </div>
     )
 }
-
-export default Home;

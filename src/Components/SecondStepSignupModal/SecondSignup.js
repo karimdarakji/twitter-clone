@@ -1,11 +1,10 @@
 import React from 'react'
 import {Modal, Form, Button} from 'react-bootstrap'
-import logo from '../../logo.png'
+import logo from '../../public/logo.png'
 import { Formik} from 'formik';
 import * as yup from 'yup';
 import '../SignupModal/SignupModal.css'
 import axios from 'axios'
-import './SecondSignup.css'
 
 export default function SecondSignup(props) {
 
@@ -31,7 +30,10 @@ export default function SecondSignup(props) {
                     setErrors({username: "Username already exists"})
                     else if(res.data === '"password" length must be at least 6 characters long')
                     setErrors({password: "Password must be more than 6 characters"})
-                    else props.onHide()
+                    else {
+                        props.onHide()
+                        props.history.push('/login')
+                    }
                 }).catch((error) => {
                     console.log(error)
                 });

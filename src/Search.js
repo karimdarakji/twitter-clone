@@ -1,4 +1,4 @@
-import Header from './header';
+import Header from './Components/Header/Header';
 import {useState} from 'react';
 import { useHistory, Link } from 'react-router-dom';
 function Search() {

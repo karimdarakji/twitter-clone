@@ -17,14 +17,15 @@ import { setSessionInfo } from "../../storage"
     .catch((error) => error.response.data);
 
 function* loginWithEmailPassword({ payload }) {
-  const { email, password } = payload;
+  const { email, password, history } = payload;
   try {
     const loginUser = yield call(loginWithEmailPasswordAsync, email, password);
     if (!loginUser.message) {
       setSessionInfo({ name: 'user', val: loginUser.user });
       setSessionInfo({ name: 'token', val: 'Bearer '+ loginUser.token });
-      yield put(loginUserSuccess(loginUser.user));
-      /* history.push('/'); */
+      yield put(loginUserSuccess('success'));
+      history.replace('/home')
+
     } else {
       yield put(loginUserError(loginUser.message));
     }  

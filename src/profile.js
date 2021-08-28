@@ -1,4 +1,4 @@
-import Header from './header';
+import Header from './Components/Header/Header';
 import {useEffect, useState} from 'react';
 function Profile() {
     

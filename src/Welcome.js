@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
-import welcome from './welcome.png'
+import welcome from './public/welcome.png'
 import './App.css'
-import logo from './logo.png'
+import logo from './public/logo.png'
 import { Button, } from 'react-bootstrap'
 import SignupModal from './Components/SignupModal/SignupModal'
 
@@ -61,6 +61,7 @@ export default function Welcome(props) {
 
         <SignupModal
         show={showModal}
+        history={props.history}
         onHide={() => togglemodal()}
         />
         </>

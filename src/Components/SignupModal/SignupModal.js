@@ -10,11 +10,11 @@ import * as yup from 'yup';
 
 import './SignupModal.css'
 import SecondSignup from '../SecondStepSignupModal/SecondSignup';
-import logo from '../../logo.png'
+import logo from '../../public/logo.png'
 
 export default function SignupModal(props) {
     
-    const {show} = props
+    const {show, history} = props
 
     const dispatch = useDispatch()
 
@@ -211,6 +211,7 @@ export default function SignupModal(props) {
         </Modal>
         <SecondSignup
         show={showModal}
+        history={history}
         onHide={() => {setShowModal(false)}}
         data={result.user}
         />

@@ -7,17 +7,20 @@ import { loginUser } from '../../redux/auth/actions'
 
 import './login.css'
 
-import logo from '../../logo.png'
+import logo from '../../public/logo.png'
 
 import { TextField } from '@material-ui/core';
+import { getSessionInfo } from '../../storage';
 
 export default function Login(props) {
+
+    const { history } = props
     const dispatch = useDispatch()
 
     const [email,setEmail]=useState("");
     const [password,setPassword]=useState("");
     
-    const login = () => dispatch(loginUser({email, password}))
+    const login = () => dispatch(loginUser({email, password, history}))
       
 
     const result = useSelector(state => state.auth)
