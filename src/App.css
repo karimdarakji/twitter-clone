@@ -138,3 +138,24 @@ button {
 .active-content {
   display: block;
 }
+.body_t {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+.footer_info span{
+  font-size: 14px;
+  color: grey
+}
+
+
+@media screen and (max-width: 700px) {
+  .body_t {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  
+  
+}

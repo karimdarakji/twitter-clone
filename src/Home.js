@@ -6,7 +6,9 @@ import {IoHeartOutline,IoHeart,IoChatbubbleEllipsesOutline} from 'react-icons/io
 
 
 function Home() {
+    
     const history = useHistory();
+    if(!localStorage.getItem('user-info')) history.push('/register')
     let user = JSON.parse(localStorage.getItem('user-info'));
     const name = user.name;
     const tweetid = user.id;

@@ -1,0 +1,17 @@
+.modal-header {
+    border-bottom: 0px !important;
+}
+.selector {
+    height: 80%;
+}
+.selector.is-invalid {
+    background-image: none !important;
+}
+.selectorr.invalid-feedback {
+    margin-top: 0 !important;
+    margin-bottom: -1.75em;
+}
+.modal-dialog {
+    min-width: 50%
+}
+

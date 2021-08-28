@@ -1,28 +1,26 @@
-import logo from './logo.svg';
-import './App.css';
-import { Button } from 'react-bootstrap';
-import Header from './header';
-import {BrowserRouter,Route,Switch, RouteComponentProps} from 'react-router-dom';
-import Login from './login';
-import Register from './register';
-import Home from './Home';
+import {Router,Route,Switch,} from 'react-router-dom';
 import Protected from './Protected';
 import Profile from './profile';
 import Userprofile from './userprofile';
 import Search from './Search';
-function App() {
+import React, {Suspense, lazy} from 'react'
+import { createBrowserHistory } from 'history';
+
+
+const Welcome = lazy(() => import('./Welcome'));
+const Login = lazy(() => import('./Pages/Login/Login.js'));
+
+const history = createBrowserHistory();
+
+export default function App() {
   return (
-    <div className="App">
-      <BrowserRouter>
+  <Router history={history}>
+    <Suspense fallback={''}>
       <Switch>
       
-      <Route path="/login">
-        <Login/>
-      </Route>
-      <Route path="/register">
-        <Register/>
-      </Route>
-      <Route path="/profile">
+      <Route path="/login" component={Login}/>
+
+      {/* <Route path="/profile">
         <Profile/>
       </Route>
       <Route path="/userprofile/:id">
@@ -30,14 +28,13 @@ function App() {
       </Route>
       <Route path="/Search">
         <Protected Cmp={Search}/>
-      </Route>
-      <Route path="/">
+      </Route> */}
+      {/* <Route path="/">
         <Protected Cmp={Home}/>
-      </Route>
+      </Route> */}
+      <Route path="/" component={Welcome} />
       </Switch>
-      </BrowserRouter>
-    </div>
-  );
+      </Suspense>
+      </Router>
+  )
 }
-
-export default App;
