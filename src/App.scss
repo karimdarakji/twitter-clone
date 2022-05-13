@@ -1,0 +1,263 @@
+@font-face {
+  font-family: "chirp";
+  font-weight: bold;
+  src: local("chirp"), url(./fonts/chirp-bold-web.woff) format("woff");
+}
+@font-face {
+  font-family: "chirp";
+  src: local("chirp"), url(./fonts/chirp-regular-web.woff) format("woff");
+}
+
+:root {
+  --main-color: rgb(29, 155, 240);
+  --border-color: rgb(207, 217, 222);
+}
+body {
+  font-family: "chirp";
+  margin: 0;
+}
+/*--- main classes ---*/
+.w-100 {
+  width: 100%;
+}
+.h-100 {
+  height: 100%;
+}
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+.text-center {
+  text-align: center;
+}
+
+.alert__success--link {
+  margin: auto;
+  text-decoration: none;
+  color: #65ba67;
+  font-weight: bold;
+}
+/*--- main button style ---*/
+
+/*--- text area ---*/
+.text_area {
+  border: 0;
+  resize: none;
+  outline: none;
+  width: 100%;
+}
+
+/*--- tweet button ---*/
+.tweet_btn {
+  background: var(--main-color) !important;
+  font-weight: bold !important;
+  border-radius: 20px !important;
+}
+
+/* HEADER */
+.header {
+  border-left: 1px solid #eff3f4;
+  border-bottom: 1px solid #eff3f4;
+  border-right: 1px solid #eff3f4;
+}
+
+.navbar_wrapper a {
+  padding-left: 30px;
+  color: blanchedalmond;
+}
+.link:hover {
+  color: darkgrey;
+  text-decoration: none;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 500px;
+  height: 300px;
+  background: #f1f1f1;
+  margin: 100px auto 0;
+  word-break: break-all;
+  border: 1px solid rgba(0, 0, 0, 0.274);
+}
+
+hr {
+  background-color: var(--border-color) !important;
+}
+
+.cont {
+  padding: 0.5rem 1rem;
+}
+.bloc-tabs {
+  display: flex;
+}
+.tabs {
+  padding: 15px;
+  text-align: center;
+  width: 50%;
+  background: rgba(128, 128, 128, 0.075);
+  cursor: pointer;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.274);
+  box-sizing: content-box;
+  position: relative;
+  outline: none;
+}
+.tabs:not(:last-child) {
+  border-right: 1px solid rgba(0, 0, 0, 0.274);
+}
+
+.active-tabs {
+  background: white;
+  border-bottom: 1px solid transparent;
+}
+
+.active-tabs::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% + 2px);
+  height: 5px;
+  background: rgb(88, 147, 241);
+}
+
+button {
+  border: none;
+}
+.content-tabs {
+  flex-grow: 1;
+}
+.content {
+  background: white;
+  padding: 20px;
+  width: 100%;
+  height: 100%;
+  display: none;
+}
+.content h2 {
+  padding: 0px 0 5px 0px;
+}
+
+.content p {
+  width: 100%;
+  height: 100%;
+}
+.active-content {
+  display: block;
+}
+
+/*--- WELCOME ---*/
+.footer_info {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.footer_info span {
+  font-size: 14px;
+  color: grey;
+}
+
+/* HOME */
+.tweet-box {
+  border: 1px solid #eff3f4;
+  padding: 1rem;
+}
+.image-tweet {
+  display: flex;
+  margin-top: 2rem;
+  margin-left: 2.7rem;
+}
+.image-tweet > div {
+  justify-content: center;
+  align-items: center;
+}
+.username {
+  color: grey;
+}
+
+/* Slide */
+.slide {
+  height: 100vh;
+  width: 14%;
+  overflow-y: auto;
+  border-right: 1px solid #eff3f4;
+}
+.slide-content {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1rem;
+}
+.slideimage {
+  object-fit: cover;
+  margin-left: auto;
+  cursor: pointer;
+  margin-bottom: 2rem;
+}
+.slidesvg {
+  width: 27px;
+  margin-right: 15px;
+}
+.slidepng {
+  width: 37px;
+  margin-right: 10px;
+  object-fit: contain;
+}
+.tweet-icon {
+  margin-right: 3px;
+  border-radius: 50%;
+  width: 50px;
+  min-height: 50px;
+  background-color: #00a2f5;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.tweet-icon > img {
+  width: 25px;
+}
+.tweet-options {
+  cursor: pointer;
+}
+.tweet-options > img:not(:first-child) {
+  margin-left: 15px;
+}
+.profile-icon {
+  margin-right: 3px;
+  margin-top: auto;
+  min-height: 50px;
+}
+.profile-image {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.textareaElement {
+  width: 300px;
+  min-height: 17px;
+  border: 1px solid #ccc;
+  max-height: 150px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.tweet_div {
+  border-color: var(--border-color);
+  cursor: pointer;
+  transition: 0.3s;
+}
+.tweet_div:hover {
+  background-color: #f7f7f7;
+  transition: 0.3s;
+}
+
+.tweet_options_icons {
+  font-size: 22px;
+  cursor: pointer;
+}

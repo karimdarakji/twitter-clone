@@ -1,0 +1,20 @@
+.modal-dialog {
+    max-width: 600px;
+    .modal-content {
+        border-radius: 15px !important;
+    }
+}
+
+.modal-dialog-centered {
+    min-height: calc(100% - 9.5rem);
+    align-items: baseline;
+}
+.vertical_line {
+    border-left: 2px solid lightgrey;
+    margin-left: 23px;
+    margin-top: 7px;
+    height: 56%;
+}
+.modal-title {
+    font-size: 18px
+}
