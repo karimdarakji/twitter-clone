@@ -8,21 +8,6 @@ import JoiDate from "@joi/date";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 
-import { getToken, COOKIE_OPTIONS } from "../authenticate.js";
-
-/*-- function to encode user info --*/
-import { Buffer } from "buffer";
-const key = Buffer.from(process.env.EN_KEY, "base64");
-
-function encrypt(text) {
-  const iv = crypto.randomBytes(16);
-  let cipher = crypto.createCipheriv("AES-128-CBC", key, iv);
-  let encrypted = cipher.update(JSON.stringify(text));
-  encrypted = Buffer.concat([iv, encrypted, cipher.final()]);
-  return encrypted.toString("hex");
-}
-/*---------------------------------*/
-
 const Joi = JoiBase.extend(JoiDate);
 
 export const createUser = async (req, res) => {
@@ -185,91 +170,5 @@ export const activateUser = async (req, res) => {
     }
   } catch (error) {
     res.status(500).send(error.message);
-  }
-};
-
-export const Login = async (req, res, next) => {
-  const { username, password } = req.body;
-  try {
-    // check if user is available, active and has entered the correct credentials
-    const checkUserExists = await User.findOne({ username: username });
-    if (!checkUserExists) {
-      res.status(404).send({ message: "Incorrect username or password" });
-    }
-    const checkPassword = await bcrypt.compare(
-      password,
-      checkUserExists?.password
-    );
-    if (checkPassword) {
-      const token = getToken({ _id: checkUserExists._id });
-      res.status(200).send({ accessToken: token });
-    }
-    //passport.authenticate("jwt", function (err, user, info) {
-    // console.log({ err: err, info: info, user: user });
-    /*-- if error --*/
-    // if (err) {
-    //  return next(err);
-    //}
-    /*-- if email or pass incorrect --*/
-    // if (info) {
-    //   res.status(500).send({ message: info });
-    // }
-
-    /* if (user) {
-        const token = getToken({ _id: user._id });
-        const refreshToken = getRefreshToken({ _id: user._id });
-
-        user.refreshToken.push({ refreshToken });
-
-        user.save((err, user) => {
-          if (err) {
-            res.status(500).send(err);
-          } else {
-            const userInfo = user.toObject();
-            delete userInfo.password;
-            Object.assign(userInfo, { token: token });
-            const data = encrypt(userInfo);
-            res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS);
-            res.status(200).send({ data });
-          }
-        });
-      } */
-    //});
-    //}
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
-};
-
-export const Logout = async (req, res) => {
-  /*-- get token from cookie --*/
-  const { signedCookies = {} } = req;
-  const { refreshToken } = signedCookies;
-
-  try {
-    await User.findById(req.user._id).then(
-      user => {
-        const tokenIndex = user.refreshToken.findIndex(
-          item => item.refreshToken === refreshToken
-        );
-
-        if (tokenIndex !== -1) {
-          user.refreshToken.id(user.refreshToken[tokenIndex]._id).remove();
-        }
-
-        user.save((err, user) => {
-          if (err) {
-            res.statusCode = 500;
-            res.send(err);
-          } else {
-            res.clearCookie("refreshToken", COOKIE_OPTIONS);
-            res.send({ success: true });
-          }
-        });
-      },
-      err => console.log(err)
-    );
-  } catch (err) {
-    console.log(err);
   }
 };

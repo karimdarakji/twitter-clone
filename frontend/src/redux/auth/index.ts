@@ -1,4 +1,10 @@
-import { IFirstSignup, ISecondSignup, IActivateUser, ILogin } from "./../types";
+import {
+  IFirstSignup,
+  ISecondSignup,
+  IActivateUser,
+  ILogin,
+  IRefreshTokenApiReturn,
+} from "./../types";
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { BaseQuery } from "../utils";
 
@@ -6,10 +12,10 @@ import { BaseQuery } from "../utils";
 export const AuthApi = createApi({
   reducerPath: "AuthApi",
   baseQuery: BaseQuery,
-  endpoints: builder => ({
+  endpoints: (builder) => ({
     // first sign up modal api
     firstSignUp: builder.mutation<any, IFirstSignup>({
-      query: data => ({
+      query: (data) => ({
         url: `auth/create`,
         method: "POST",
         body: data,
@@ -17,7 +23,7 @@ export const AuthApi = createApi({
     }),
     // second sign up modal api
     secondSignUp: builder.mutation<any, ISecondSignup>({
-      query: data => ({
+      query: (data) => ({
         url: `auth/update`,
         method: "POST",
         body: data,
@@ -25,7 +31,7 @@ export const AuthApi = createApi({
     }),
     // activate user
     activateUser: builder.mutation<any, IActivateUser>({
-      query: data => ({
+      query: (data) => ({
         url: `auth/activate`,
         method: "POST",
         body: data,
@@ -33,10 +39,17 @@ export const AuthApi = createApi({
     }),
     // Login
     Login: builder.mutation<any, ILogin>({
-      query: data => ({
+      query: (data) => ({
         url: `auth/login`,
         method: "POST",
         body: data,
+      }),
+    }),
+    // Refresh Token
+    RefreshToken: builder.mutation<IRefreshTokenApiReturn, void>({
+      query: () => ({
+        url: `auth/refresh`,
+        method: "POST",
       }),
     }),
   }),
@@ -49,4 +62,5 @@ export const {
   useSecondSignUpMutation,
   useActivateUserMutation,
   useLoginMutation,
+  useRefreshTokenMutation,
 } = AuthApi;

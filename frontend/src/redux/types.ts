@@ -21,3 +21,7 @@ export interface ILogin {
   username: string;
   password: string;
 }
+
+export interface IRefreshTokenApiReturn {
+  accessToken: string;
+}

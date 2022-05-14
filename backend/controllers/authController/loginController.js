@@ -1,6 +1,11 @@
 import User from "../../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import {
+  cookieConfig,
+  setAccessToken,
+  setRefreshToken,
+} from "../../utils/authenticate.js";
 
 const handleLogin = async (req, res) => {
   const cookies = req.cookies;
@@ -20,26 +25,12 @@ const handleLogin = async (req, res) => {
     const checkPassword = await bcrypt.compare(password, foundUser?.password);
     if (checkPassword) {
       // create JWTs
-      const accessToken = jwt.sign(
-        {
-          UserInfo: {
-            username: foundUser.username,
-          },
-        },
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "15m" }
-      );
-      const newRefreshToken = jwt.sign(
-        {
-          username: foundUser.username,
-        },
-        process.env.REFRESH_TOKEN_SECRET,
-        { expiresIn: "5d" }
-      );
+      const accessToken = setAccessToken(foundUser.username);
+      const newRefreshToken = setRefreshToken(foundUser.username);
 
       let newRefreshTokenArray = !cookies?.jwt
         ? foundUser.refreshToken
-        : foundUser.refreshToken.filter(rt => rt !== cookies.jwt);
+        : foundUser.refreshToken.filter((rt) => rt !== cookies.jwt);
 
       if (cookies?.jwt) {
         /* 
@@ -55,11 +46,7 @@ const handleLogin = async (req, res) => {
         if (!foundToken) {
           newRefreshTokenArray = [];
         }
-        res.clearCookie("jwt", {
-          httpOnly: true,
-          sameSite: "None",
-          secure: true,
-        });
+        res.clearCookie("jwt", cookieConfig);
       }
 
       // Saving refreshToken with current user
@@ -67,12 +54,7 @@ const handleLogin = async (req, res) => {
       await foundUser.save();
 
       // Creates Secure Cookie with refresh token
-      res.cookie("jwt", newRefreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-        maxAge: 5 * 24 * 60 * 60 * 1000,
-      });
+      res.cookie("jwt", newRefreshToken, cookieConfig);
 
       res.json({ accessToken });
     } else {

@@ -1,25 +1,34 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Grid, TextField } from "@mui/material";
-
-import { useSelector, useDispatch } from "react-redux";
-//import { loginUser } from "../redux/auth/actions";
 
 import "../Styles/login.scss";
 
 import logo from "../public/logo.png";
 import CustomButton from "../Components/CustomButton";
-import { useAppDispatch } from "../redux/hooks";
+import { useLoginMutation } from "../redux/auth";
 
 export default function Login() {
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const [loginFunction, { data, isLoading, error }] = useLoginMutation();
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  // const login = () => dispatch(loginUser({ email, password }));
+  const login = async () => {
+    try {
+      await loginFunction({ username, password });
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-  const result = useSelector((state: any) => state.auth);
+  useEffect(() => {
+    if (data) {
+      navigate("/home", { replace: true });
+    }
+  }, [data]);
+  console.log(data);
 
   return (
     <Grid className="login-contents">
@@ -31,7 +40,7 @@ export default function Login() {
           sx={{ marginBottom: 3 }}
           label="Email, or Username"
           variant="outlined"
-          onChange={e => setEmail(e.target.value)}
+          onChange={(e) => setUsername(e.target.value)}
         />
 
         <TextField
@@ -39,17 +48,21 @@ export default function Login() {
           label="Password"
           variant="outlined"
           type="password"
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
         />
 
-        {result?.message && result.message !== "success" && (
+        {error?.message && (
           <p style={{ color: "red", marginBottom: 0 }}>
             Incorrect username or password
           </p>
         )}
-        {/* <CustomButton onClick={login} sx={{ marginTop: 3 }}>
+        <CustomButton
+          onClick={login}
+          sx={{ marginTop: 3 }}
+          disabled={isLoading}
+        >
           Login
-        </CustomButton> */}
+        </CustomButton>
 
         <p className="text-center">
           <Link to="">Forgot Password?</Link> .{" "}
