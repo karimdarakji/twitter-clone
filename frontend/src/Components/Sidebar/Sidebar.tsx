@@ -1,76 +1,67 @@
-import React, { useContext } from "react";
-import { useLocation } from "react-router";
+import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import logo from "../../public/twitterlogo.png";
-import explore from "../../public/hashtag.svg";
-import feather from "../../public/feather.svg";
+import { IoPersonOutline, IoLogoTwitter } from "react-icons/io5";
 import {
-  IoPersonOutline,
-  IoPersonSharp,
-  IoHomeOutline,
-  IoHome,
-} from "react-icons/io5";
+  RiHome7Fill,
+  RiHome7Line,
+  RiHashtag,
+  RiUser3Line,
+} from "react-icons/ri";
+import { GiFeather } from "react-icons/gi";
 
-export default function Sidebar() {
-  // const { history } = props;
+import styles from "../../Styles/Components/Sidebar.module.scss";
 
-  // const location = useLocation();
+export const Sidebar: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const navigate = useNavigate();
+
+  const location = useLocation();
 
   // const userInfo = getLocalStorage("ui");
 
   return (
-    <div className="slide">
-      {/* <div className="slide-content h-100">
-        <img
-          className="slideimage slidepng"
-          src={logo}
-          alt="home"
-          onClick={() => history.push("/home")}
+    <div className={styles.slide}>
+      <div className={styles.slide__content}>
+        <IoLogoTwitter
+          className={styles.slideimage}
+          style={{ color: "#00A2F5" }}
+          onClick={() => navigate("/home")}
         />
         {location.pathname.includes("home") ? (
-          <IoHome
-            className="slideimage slidesvg"
-            style={{ width: "27px", height: "27px" }}
-            alt="home"
-          />
+          <RiHome7Fill className={styles.slideimage} />
         ) : (
-          <IoHomeOutline
-            className="slideimage slidesvg"
-            style={{ width: "27px", height: "27px" }}
-            alt="home"
-            onClick={() => history.push("/home")}
+          <RiHome7Line
+            className={styles.slideimage}
+            onClick={() => navigate("/home")}
           />
         )}
-        <img className="slideimage slidesvg" src={explore} alt="explore" />
+        <RiHashtag className={styles.slideimage} />
         <div
-          className="slideimage mb-0"
-          onClick={() => history.push(`/profile/${userInfo.username}`)}
+          className={styles.slideimage}
+          onClick={() => navigate(`/profile/`)}
         >
           {location.pathname.includes("profile") ? (
-            <IoPersonSharp
-              className="slideimage slidesvg"
-              style={{ width: "27px", height: "27px" }}
-              alt="profile"
-            />
+            <RiUser3Line className={styles.slideimage} />
           ) : (
-            <IoPersonOutline
-              className="slideimage slidesvg"
-              style={{ width: "27px", height: "27px" }}
-              alt="profile"
-            />
+            <IoPersonOutline className={styles.slideimage} />
           )}
         </div>
-        <div className="tweet-icon slideimage">
-          <img src={feather} alt="tweet" />
+        <div className={styles.tweetIcon}>
+          <GiFeather className={styles.feather} />
         </div>
         <div className="profile-icon slideimage">
           <img
             className="profile-image"
-            src={`http://localhost:5000/` + userInfo.picture}
+            src={
+              `http://localhost:5000/` //+ userInfo.picture
+            }
             alt="account"
           />
         </div>
-      </div> */}
+      </div>
+      {children}
     </div>
   );
-}
+};

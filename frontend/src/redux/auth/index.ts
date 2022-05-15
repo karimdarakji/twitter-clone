@@ -16,7 +16,7 @@ export const AuthApi = createApi({
     // first sign up modal api
     firstSignUp: builder.mutation<any, IFirstSignup>({
       query: (data) => ({
-        url: `auth/create`,
+        url: `auth/register`,
         method: "POST",
         body: data,
       }),
@@ -24,7 +24,7 @@ export const AuthApi = createApi({
     // second sign up modal api
     secondSignUp: builder.mutation<any, ISecondSignup>({
       query: (data) => ({
-        url: `auth/update`,
+        url: `auth/secregister`,
         method: "POST",
         body: data,
       }),

@@ -3,38 +3,42 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  useNavigate,
   Navigate,
 } from "react-router-dom";
 
-import { Logout } from "./Pages/Logout/Logout";
-import { IAuth } from "./global";
 import RequireAuth from "./Components/RequireAuth";
-
-import Welcome from "./Pages/ViewWelcome";
-import Login from "./Pages/ViewLogin";
-import ViewAccountActivation from "./Pages/ViewAccountActivation";
 import PersistLogin from "./Components/PersistLogin";
 
-const Home = lazy(() => import("./Pages/ViewHome"));
-const Profile = lazy(() => import("./Pages/ViewProfile"));
+import { AccountActivation, Login, Welcome, Home, Profile } from "./Pages";
+import NonProtectedRoutes from "./Components/NonProtectedRoutes";
+
 const TweetPage = lazy(() => import("./Pages/Tweet"));
 
 export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/welcome" element={<Welcome />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/activate" element={<ViewAccountActivation />} />
+        <Route element={<NonProtectedRoutes />}>
+          <Route path="/welcome" element={<Welcome />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/activate" element={<AccountActivation />} />
+          <Route path="/" element={<Navigate replace to="/welcome" />} />
+        </Route>
 
-        <Route path="/" element={<Navigate replace to="/welcome" />} />
         <Route element={<PersistLogin />}>
           <Route
             path="/home"
             element={
               <RequireAuth>
                 <Home />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <RequireAuth>
+                <Profile />
               </RequireAuth>
             }
           />

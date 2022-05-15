@@ -28,7 +28,6 @@ export default function Login() {
       navigate("/home", { replace: true });
     }
   }, [data]);
-  console.log(data);
 
   return (
     <Grid className="login-contents">

@@ -1,0 +1,55 @@
+/* Slide */
+.slide {
+  height: 100vh;
+  width: 180px;
+
+  border-right: 1px solid #eff3f4;
+}
+.slide__content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1rem;
+}
+.slideimage {
+  object-fit: cover;
+  margin-left: auto;
+  cursor: pointer;
+  margin-bottom: 2rem;
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  margin-right: 15px;
+}
+
+.tweetIcon {
+  margin-left: auto;
+  margin-right: 3px;
+  border-radius: 50%;
+  width: 52px;
+  min-height: 52px;
+  background-color: #00a2f5;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: 0.3s background-color;
+  &:hover {
+    background-color: #0093dd;
+  }
+  &:before {
+    content: "\207A";
+    font-size: 27px;
+    position: relative;
+    left: 6px;
+    color: white;
+  }
+  > .feather {
+    width: 25px;
+    height: 25px;
+    color: white;
+    position: relative;
+    top: 3px;
+  }
+}
