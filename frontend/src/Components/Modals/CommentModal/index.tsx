@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 
-import { Modal, Button } from "react-bootstrap";
 
 import "./CommentModal.css";
-import { TextareaAutosize } from "@material-ui/core";
 
 import image from "../../../public/image.svg";
 import gif from "../../../public/gif.svg";

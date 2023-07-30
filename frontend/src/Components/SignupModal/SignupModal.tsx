@@ -33,9 +33,19 @@ interface ISignUpModal {
 
 const SignupModal = ({ show, onHide }: ISignUpModal) => {
   const [addUser, { data, error }] = useFirstSignUpMutation();
-
   // second sign up modal
   const [showModal, setShowModal] = useState(false);
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      email: "",
+      month: "",
+      day: "",
+      year: "",
+    },
+    validationSchema: signupSchema,
+    onSubmit: (values) => add_user(values),
+  });
 
   useEffect(() => {
     if (data) {
@@ -59,17 +69,7 @@ const SignupModal = ({ show, onHide }: ISignUpModal) => {
 
     await addUser(copyValues);
   };
-  const formik = useFormik({
-    initialValues: {
-      name: "",
-      email: "",
-      month: "",
-      day: "",
-      year: "",
-    },
-    validationSchema: signupSchema,
-    onSubmit: (values) => add_user(values),
-  });
+
 
   // Mui select dropdown style
   const MenuProps = {

@@ -14,7 +14,6 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 import logo from "../../public/logo.png";
 
-import "../../Styles/SignupModal.scss";
 import { secondSignupSchema } from "../../Yup/Schemas";
 import CustomButton from "../CustomButton";
 import { useSecondSignUpMutation } from "../../redux/auth";

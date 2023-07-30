@@ -1,12 +1,5 @@
 import express from "express";
-import {
-  handleLogin,
-  handleRefreshToken,
-  handleLogout,
-  handleFirstRegistrationProcess,
-  handleSecondRegistrationProcess,
-  handleUserActivation,
-} from "../controllers/authController/index.js";
+import { handleFirstRegistrationProcess, handleSecondRegistrationProcess, handleUserActivation, handleLogin, handleRefreshToken, handleLogout } from "../controllers/authController";
 
 const router = express.Router();
 

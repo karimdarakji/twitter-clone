@@ -1,0 +1,16 @@
+.tweetBox {
+    display: flex;
+    padding: 1rem;
+    width: 100%;
+    .input {
+        padding-left: .5rem;
+        > div {
+            &::before {
+                border: 0 !important
+            }
+            &::after {
+                border: 0 !important
+            }
+        }
+    }
+}

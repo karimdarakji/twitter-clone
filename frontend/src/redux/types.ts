@@ -18,7 +18,7 @@ export interface IActivateUser {
 }
 
 export interface ILogin {
-  username: string;
+  usernameOrEmail: string;
   password: string;
 }
 

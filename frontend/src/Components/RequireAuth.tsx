@@ -1,17 +1,19 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import { Sidebar } from "./Sidebar/Sidebar";
+import Container from "@mui/material/Container/Container";
 
-const RequireAuth = ({ children }: { children: React.ReactNode }) => {
+const RequireAuth = () => {
   const { auth }: any = useAuth();
   const location = useLocation();
 
   return !auth?.accessToken ? (
     <Navigate to="/login" state={{ from: location }} replace />
   ) : (
-    <Sidebar>
+    <Container sx={{ display: "flex" }}>
+      <Sidebar />
       <Outlet />
-    </Sidebar>
+    </Container>
   );
 };
 

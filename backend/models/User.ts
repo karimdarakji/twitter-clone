@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const UserSchema = mongoose.Schema({
+const UserSchema = new mongoose.Schema({
   name: {
     type: String,
     min: 2,
@@ -28,7 +28,7 @@ const UserSchema = mongoose.Schema({
     type: Number,
     default: 0,
   },
-  picture: {
+  image: {
     type: String,
     default: undefined,
   },

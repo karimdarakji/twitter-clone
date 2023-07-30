@@ -1,19 +1,19 @@
 import React, { useEffect, useState, useMemo } from "react";
+import { Box, Divider } from "@mui/material";
+import Header from "../Components/Header/Header";
+import { useUserQuery } from "../redux/user";
+import CustomAlert from "../Components/Alert";
+import TweetBox from "../Components/TweetBox/TweetBox";
 
-import { Button } from "react-bootstrap";
-import { TextareaAutosize } from "@material-ui/core";
+const Home = () => {
+  const { data: user, isLoading, isError } = useUserQuery();
 
-import image from "../public/image.svg";
-import gif from "../public/gif.svg";
-import poll from "../public/poll.svg";
-import emoji from "../public/happy.svg";
-
-//import { createTweet, gettweets } from "../redux/actions";
-import { useDispatch, useSelector } from "react-redux";
-
-import Tweets from "../Components/Tweets";
-
-export default function Home() {
+  if(isLoading || !user) {
+    return <p>Loading</p>
+  }
+  if(isError) {
+    return <CustomAlert severity="error">Something went wrong.</CustomAlert>
+  }
   // const userInfo = getLocalStorage("ui");
 
   // console.log(userInfo);
@@ -55,7 +55,10 @@ export default function Home() {
   // }, [alltweets]);
 
   return (
-    <div>
+    <Box width={"50%"}>
+      <Header title="Home" />
+      <TweetBox user={user} />
+      <Divider />
       {/* <div className="tweet-box">
         <div className="d-flex">
           <img
@@ -95,6 +98,8 @@ export default function Home() {
             return <Tweets key={item._id} data={item} history={history} />;
           })}
       </div> */}
-    </div>
+    </Box>
   );
 }
+
+export default Home;

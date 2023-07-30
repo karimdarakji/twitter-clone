@@ -8,8 +8,6 @@ import {
   IoRepeatOutline,
   IoPushOutline,
 } from "react-icons/io5";
-import { TextareaAutosize } from "@material-ui/core";
-import { Button } from "react-bootstrap";
 
 //import { gettweet, liketweet, commenttweet } from "../../redux/actions";
 

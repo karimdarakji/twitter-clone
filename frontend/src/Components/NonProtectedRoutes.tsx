@@ -4,7 +4,11 @@ import useAuth from "../hooks/useAuth";
 
 const NonProtectedRoutes = () => {
   const { auth }: any = useAuth();
-  return !auth?.accessToken ? <Navigate to="/home" replace /> : <Outlet />;
+  console.log(auth);
+  if(auth.accessToken) {
+    return <Navigate to="/" replace />
+  }
+  return <Outlet />
 };
 
 export default NonProtectedRoutes;

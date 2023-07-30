@@ -5,61 +5,28 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-
 import RequireAuth from "./Components/RequireAuth";
 import PersistLogin from "./Components/PersistLogin";
-
-import { AccountActivation, Login, Welcome, Home, Profile } from "./Pages";
 import NonProtectedRoutes from "./Components/NonProtectedRoutes";
-
-const TweetPage = lazy(() => import("./Pages/Tweet"));
+import { AccountActivation, Login, MainPage, Profile } from "./Pages";
+import TweetPage from "./Pages/Tweet";
 
 export default function App() {
   return (
     <Router>
       <Routes>
-        <Route element={<NonProtectedRoutes />}>
-          <Route path="/welcome" element={<Welcome />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/activate" element={<AccountActivation />} />
-          <Route path="/" element={<Navigate replace to="/welcome" />} />
-        </Route>
-
         <Route element={<PersistLogin />}>
-          <Route
-            path="/home"
-            element={
-              <RequireAuth>
-                <Home />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <RequireAuth>
-                <Profile />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/:username/tweet/:id"
-            element={
-              <RequireAuth>
-                <TweetPage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/profile/:username"
-            element={
-              <RequireAuth>
-                <Profile />
-              </RequireAuth>
-            }
-          />
-          <Route path="/" element={<Navigate replace to="/home" />} />
+          <Route element={<NonProtectedRoutes />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/activate" element={<AccountActivation />} />
+          </Route>
+          <Route path="/" element={<RequireAuth />}>
+            <Route path="/:username" element={<Profile />} />
+            <Route path="/:username/tweet/:id" element={<TweetPage />} />
+            <Route path="/" element={<MainPage />} />
+          </Route>
         </Route>
+        <Route path="/" element={<MainPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

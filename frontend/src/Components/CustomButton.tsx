@@ -4,6 +4,7 @@ import React, { ReactNode } from "react";
 
 interface IButton {
   className?: string;
+  width?: string;
   variant?: "text" | "outlined" | "contained" | undefined;
   children: ReactNode;
   onClick?: React.MouseEventHandler;
@@ -14,6 +15,7 @@ interface IButton {
 
 const CustomButton = ({
   className,
+  width,
   variant,
   children,
   onClick,
@@ -23,7 +25,7 @@ const CustomButton = ({
 }: IButton) => {
   const CButton = styled(Button)(`
     font-weight: bold;
-    width: 400px;
+    width: ${width ?? "400px"};
     padding: 15px;
     border-radius: 30px;
     background-color: ${

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import useRefreshToken from "../hooks/useRefreshToken";
+import { Outlet } from "react-router-dom";
+import { Box } from "@mui/material";
 
 const PersistLogin = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -27,7 +28,11 @@ const PersistLogin = () => {
     return () => (isMounted = false);
   }, []);
 
-  return <>{isLoading ? <p>Loading...</p> : <Outlet />}</>;
+  if(isLoading) {
+    return <Box>Loading...</Box>
+  }
+
+  return <Outlet />
 };
 
 export default PersistLogin;
