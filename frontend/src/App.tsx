@@ -5,29 +5,36 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import RequireAuth from "./Components/RequireAuth";
 import PersistLogin from "./Components/PersistLogin";
 import NonProtectedRoutes from "./Components/NonProtectedRoutes";
-import { AccountActivation, Login, MainPage, Profile } from "./Pages";
+import { AccountActivation, Home, Login, Profile, Welcome } from "./Pages";
 import TweetPage from "./Pages/Tweet";
+import SidebarLayout from "./Components/Layouts/SidebarLayout";
+import useAuth from "./hooks/useAuth";
 
 export default function App() {
+  const { accessToken } = useAuth();
   return (
     <Router>
       <Routes>
         <Route element={<PersistLogin />}>
+          {
+            accessToken && (
+            <Route element={<SidebarLayout />}>
+              <Route path="/home" element={<Home />} />
+              <Route path="/:username" element={<Profile />} />
+              <Route path="/:username/tweet/:id" element={<TweetPage />} />
+            </Route>
+            )
+          }
           <Route element={<NonProtectedRoutes />}>
             <Route path="/login" element={<Login />} />
             <Route path="/activate" element={<AccountActivation />} />
+            <Route path="/" element={<Welcome />} />
           </Route>
-          <Route path="/" element={<RequireAuth />}>
-            <Route path="/:username" element={<Profile />} />
-            <Route path="/:username/tweet/:id" element={<TweetPage />} />
-            <Route path="/" element={<MainPage />} />
-          </Route>
+              
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
-        <Route path="/" element={<MainPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

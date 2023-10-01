@@ -4,34 +4,17 @@ import SignupModal from "../Components/SignupModal/SignupModal";
 
 import welcome from "../public/welcome.png";
 import logo from "../public/logo.png";
-import { Grid } from "@mui/material";
+import { Button, Divider, Grid, Typography } from "@mui/material";
 import CustomButton from "../Components/CustomButton";
 import { useNavigate } from "react-router-dom";
+import GoogleButton from "../Components/Buttons/GoogleButton";
 
 export default function Welcome() {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-
-  //bottom links
-  const bottomLinks = [
-    "About",
-    "Help Center",
-    "Terms of Service",
-    "Privacy Policy",
-    "Cookie Policy",
-    "Ads info",
-    "Blog",
-    "Status",
-    "Careers",
-    "Brand Resources",
-    "Advertising",
-    "Marketing",
-    "Twitter for Business",
-    "Developers",
-    "Directory",
-    "Settings",
-    "@ 2022 Twitter, Inc.",
-  ];
+  const googleAuthUrl = (state: string) => `
+  https://accounts.google.com/o/oauth2/v2/auth?client_id=${import.meta.env.VITE_GOOGLE_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_API_URL}google/oauth2callback&response_type=code&include_granted_scopes=true&state=${state}&scope=https://www.googleapis.com/auth/userinfo.email
+`;
 
   return (
     <>
@@ -69,12 +52,18 @@ export default function Welcome() {
 
           <h2 style={{ fontSize: "35px" }}>Join Twitter today.</h2>
 
-          <Grid item mt={5} direction="column" style={{ display: "flex" }}>
+          <Grid container item mt={5} direction="column" display={"flex"}>
+            <GoogleButton prompt="Sign in" href={googleAuthUrl("signin")} />
+            <Divider sx={{ width: "18rem"}}>or</Divider>
+            <br />
             <CustomButton onClick={() => setShowModal(true)}>
-              Sign up
+              Create account
             </CustomButton>
+            <br />
+            <br />
+            <Typography fontWeight={"bold"}>Already have an Account?</Typography>
+            <br />
             <CustomButton
-              sx={{ marginTop: 4 }}
               variant={"outlined"}
               onClick={() => navigate("/login")}
             >
@@ -83,24 +72,6 @@ export default function Welcome() {
           </Grid>
         </Grid>
       </Grid>
-      <Grid
-        className="footer_info text-center"
-        style={{ color: "grey" }}
-        my={2}
-      >
-        {bottomLinks.map((item, index) => (
-          <span
-            key={`link${index}`}
-            style={{
-              margin: "0px 10px 10px 10px",
-              cursor: `${index !== bottomLinks.length - 1 && "pointer"}`,
-            }}
-          >
-            {item}
-          </span>
-        ))}
-      </Grid>
-
       <SignupModal show={showModal} onHide={() => setShowModal(!showModal)} />
     </>
   );

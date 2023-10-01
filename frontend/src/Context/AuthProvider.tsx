@@ -1,12 +1,20 @@
 import React, { createContext, useState } from "react";
 
-const AuthContext = createContext({});
+interface IAuthContext {
+  accessToken: string,
+  setAccessToken: (accessToken: string) => void
+}
+
+const AuthContext = createContext<IAuthContext>({
+  accessToken: "",
+  setAccessToken: (accessToken: string) => {}
+});
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [auth, setAuth] = useState({});
+  const [accessToken, setAccessToken] = useState("");
 
   return (
-    <AuthContext.Provider value={{ auth, setAuth }}>
+    <AuthContext.Provider value={{ accessToken, setAccessToken }}>
       {children}
     </AuthContext.Provider>
   );

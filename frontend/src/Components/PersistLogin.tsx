@@ -7,7 +7,7 @@ import { Box } from "@mui/material";
 const PersistLogin = () => {
   const [isLoading, setIsLoading] = useState(true);
   const refresh = useRefreshToken();
-  const { auth }: any = useAuth();
+  const { accessToken } = useAuth();
 
   useEffect((): any => {
     let isMounted = true;
@@ -23,7 +23,7 @@ const PersistLogin = () => {
     };
 
     // Avoids unwanted call to verifyRefreshToken
-    !auth?.accessToken ? verfifyRefreshToken() : setIsLoading(false);
+    !accessToken ? verfifyRefreshToken() : setIsLoading(false);
 
     return () => (isMounted = false);
   }, []);

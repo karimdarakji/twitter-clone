@@ -152,7 +152,7 @@ const SignupModal = ({ show, onHide }: ISignUpModal) => {
               this account is for a business, a pet, or something else.
             </div>
             <Grid container spacing={2} style={{ margin: "5% 0" }}>
-              <Grid xs={4}>
+              <Grid item xs={4}>
                 <FormControl sx={{ m: 1, minWidth: 120 }}>
                   <InputLabel>Month</InputLabel>
                   <Select
@@ -170,7 +170,7 @@ const SignupModal = ({ show, onHide }: ISignUpModal) => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid xs={4}>
+              <Grid item xs={4}>
                 <FormControl sx={{ m: 1, minWidth: 120 }}>
                   <InputLabel>Day</InputLabel>
                   <Select
@@ -189,7 +189,7 @@ const SignupModal = ({ show, onHide }: ISignUpModal) => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid xs={4}>
+              <Grid item xs={4}>
                 <FormControl sx={{ m: 1, minWidth: 120 }}>
                   <InputLabel>Year</InputLabel>
                   <Select

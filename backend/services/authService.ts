@@ -6,32 +6,35 @@ import { ForbiddenError, NotFoundError } from "../utils/errors";
 
 const userSchema = Joi.object({
   usernameOrEmail: Joi.string().required(),
-  password: Joi.string().required(),
 });
 
 class AuthService {
   static async validateLogin(
     usernameOrEmail: string,
     password: string,
-    currentRefreshToken: string
+    currentRefreshToken: string,
+    isOAuth: boolean = false
   ) {
-    const { error } = userSchema.validate({ usernameOrEmail, password });
+    const { error } = userSchema.validate({ usernameOrEmail });
 
     if (error) {
       throw new NotFoundError(error.details[0].message);
     }
-    const foundUser = await User.findOne({ username: usernameOrEmail });
+    const foundUser = await User.findOne({ email: usernameOrEmail });
     if (!foundUser) {
       throw new NotFoundError("Incorrect username or password");
     }
-    const checkPassword = await bcrypt.compare(password, foundUser?.password);
-    if (!checkPassword) {
-      throw new NotFoundError("Incorrect username or password");
-    }
 
-    // check if account is active
-    if (!foundUser.active) {
-      throw new ForbiddenError("You need to activate your account.");
+    if (!isOAuth) {
+      const checkPassword = await bcrypt.compare(password, foundUser?.password);
+      if (!checkPassword) {
+        throw new NotFoundError("Incorrect username or password");
+      }
+
+      // check if account is active
+      if (!foundUser.active) {
+        throw new ForbiddenError("You need to activate your account.");
+      }
     }
 
     // create JWTs

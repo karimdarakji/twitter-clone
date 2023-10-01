@@ -2,7 +2,7 @@ import { useRefreshTokenMutation } from "../redux/auth";
 import useAuth from "./useAuth";
 
 const useRefreshToken = () => {
-  const { setAuth }: any = useAuth();
+  const { setAccessToken } = useAuth();
 
   const [refreshToken] = useRefreshTokenMutation();
 
@@ -10,7 +10,7 @@ const useRefreshToken = () => {
     await refreshToken()
       .unwrap()
       .then((payload) => {
-        setAuth({ accessToken: payload?.accessToken });
+        setAccessToken(payload?.accessToken);
         return payload.accessToken;
       });
   };

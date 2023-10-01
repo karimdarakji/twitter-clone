@@ -25,8 +25,8 @@ const CustomButton = ({
 }: IButton) => {
   const CButton = styled(Button)(`
     font-weight: bold;
-    width: ${width ?? "400px"};
-    padding: 15px;
+    width: ${width ?? "18rem"};
+    padding: 10px;
     border-radius: 30px;
     background-color: ${
       variant ? "transparent" : "rgb(29, 155, 240)"

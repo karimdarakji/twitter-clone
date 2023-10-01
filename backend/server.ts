@@ -6,6 +6,7 @@ import path from "path";
 
 import AuthRoutes from "./routes/authRoute";
 import UserRoutes from "./routes/userRoute";
+import GoogleRoutes from "./routes/googleRoute";
 //import TweetsRoutes from "./routes/tweets.js";
 
 import "dotenv/config";
@@ -39,13 +40,15 @@ app.use("/", express.static(path.join(__dirname, "/public")));
 
 // API Routes
 app.use("/api/auth", AuthRoutes);
+app.use("/api/google", GoogleRoutes);
 app.use("/api", UserRoutes);
 
 app.use(verifyJWT);
 //app.use("/api/tweets", TweetsRoutes);
 
-mongoose.connect(process.env.MONGO_DB_CONNECTION_STRING ?? "")
-.then(() => console.log("Connected to MongoDB"))
-.catch((error) => console.error(error));
-  
+mongoose
+  .connect(process.env.MONGO_DB_CONNECTION_STRING ?? "")
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((error) => console.error(error));
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

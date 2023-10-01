@@ -3,10 +3,9 @@ import { Navigate, Outlet } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 
 const NonProtectedRoutes = () => {
-  const { auth }: any = useAuth();
-  console.log(auth);
-  if(auth.accessToken) {
-    return <Navigate to="/" replace />
+  const { accessToken } = useAuth();
+  if(accessToken) {
+    return <Navigate to="/home" replace />
   }
   return <Outlet />
 };
