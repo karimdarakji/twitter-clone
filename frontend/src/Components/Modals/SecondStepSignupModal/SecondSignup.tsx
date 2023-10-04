@@ -12,24 +12,29 @@ import {
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
-import logo from "../../public/logo.png";
+import logo from "../../../public/logo.png";
 
-import { secondSignupSchema } from "../../Yup/Schemas";
-import CustomButton from "../CustomButton";
-import { useSecondSignUpMutation } from "../../redux/auth";
-import CustomAlert from "../Alert";
-import { validatePassword } from "../../Services/password-validator";
+import { secondSignupSchema } from "../../../Yup/Schemas";
+import CustomButton from "../../CustomButton";
+import CustomAlert from "../../Alert";
+import { validatePassword } from "../../../Services/password-validator";
+import moment from "moment";
+import { useCreateUserMutation } from "../../../redux/auth";
 
 interface ISecondSignup {
   show: boolean;
   onHide: () => void;
-  data: any;
+  data: {
+    name: string,
+    email: string,
+    year: string,
+    month: string,
+    day: string
+  };
 }
 
 export default function SecondSignup({ show, onHide, data }: ISecondSignup) {
-  const [secondRegister, { data: secondRegisterData, error, isSuccess }] =
-    useSecondSignUpMutation();
-  const navigate = useNavigate();
+  const [createUser, { data: userData, error, isSuccess }] = useCreateUserMutation();
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -40,38 +45,27 @@ export default function SecondSignup({ show, onHide, data }: ISecondSignup) {
       password: "",
     },
     validationSchema: secondSignupSchema,
-    onSubmit: (values) => add_user(values),
+    onSubmit: (values) => addUser(values),
   });
 
   useEffect(() => {
-    if (secondRegisterData) {
+    if (userData) {
       onHide();
     }
-  }, [secondRegisterData]);
+  }, [userData]);
 
-  const add_user = async (values: any) => {
+  const addUser = async (values: { username: string, password: string }) => {
     const userObject = {
+      name: data.name,
       username: values.username,
       email: data.email,
       password: values.password,
+      birthDate: `${data.year}-${moment().month(data.month).format("MM")}-${
+        data.day
+      }`,
     };
 
-    await secondRegister(userObject);
-    //axios
-    // .post("http://localhost:5000/register/update", userObject)
-    //  .then((res) => {
-    //if(res.data.errors && res.data.errors.username === "User Name already exists")
-    //setErrors({username: "Username already exists"})
-    //else if(res.data === '"password" length must be at least 6 characters long')
-    //setErrors({password: "Password must be more than 6 characters"})
-    //else {
-    //    onHide()
-    //    navigate('/login')
-    // }
-    //  })
-    //  .catch((error: any) => {
-    //   console.log(error);
-    // });
+    await createUser(userObject);
   };
 
   return (
@@ -80,11 +74,6 @@ export default function SecondSignup({ show, onHide, data }: ISecondSignup) {
       {isSuccess && (
         <CustomAlert
           severity="success"
-          action={
-            <Link className="alert__success--link" to={"/login"}>
-              Login
-            </Link>
-          }
         >
           An Email has been sent for verification, please check your inbox or
           spam folder!
@@ -93,6 +82,10 @@ export default function SecondSignup({ show, onHide, data }: ISecondSignup) {
       <Dialog
         fullWidth
         open={show}
+        onClose={() => {
+          onHide();
+          formik.resetForm()
+        }}
         PaperProps={{ style: { overflowX: "hidden" } }}
       >
         <DialogTitle className="text-center">

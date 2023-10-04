@@ -1,7 +1,6 @@
 import {
-  IFirstSignup,
-  ISecondSignup,
   IActivateUser,
+  ICreateUser,
   ILogin,
   IRefreshTokenApiReturn,
 } from "./../types";
@@ -14,19 +13,18 @@ export const AuthApi = createApi({
   baseQuery: BaseQuery,
   endpoints: (builder) => ({
     // first sign up modal api
-    firstSignUp: builder.mutation<any, IFirstSignup>({
+    createUser: builder.mutation<any, ICreateUser>({
       query: (data) => ({
-        url: `auth/register`,
+        url: `auth/create`,
         method: "POST",
         body: data,
       }),
     }),
-    // second sign up modal api
-    secondSignUp: builder.mutation<any, ISecondSignup>({
-      query: (data) => ({
-        url: `auth/secregister`,
+    getUserEmail: builder.mutation<string, string>({
+      query: (email) => ({
+        url: `auth/user/email`,
         method: "POST",
-        body: data,
+        body: { email },
       }),
     }),
     // activate user
@@ -65,10 +63,10 @@ export const AuthApi = createApi({
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
 export const {
-  useFirstSignUpMutation,
-  useSecondSignUpMutation,
+  useCreateUserMutation,
   useActivateUserMutation,
   useLoginMutation,
   useRefreshTokenMutation,
   useLogoutMutation,
+  useGetUserEmailMutation,
 } = AuthApi;

@@ -5,10 +5,10 @@ import { Button, styled } from '@mui/material';
 interface IGoogleButton {
     variant?: string,
     prompt: string,
-    href: string
+    state: "signin" | "signup"
 }
 
-const GoogleButton = ({ variant = "primary", prompt, href }: IGoogleButton) => {
+const GoogleButton = ({ variant = "primary", prompt, state }: IGoogleButton) => {
     const CButton = styled(Button)(`
     font-weight: bold;
     width: 18rem;
@@ -21,7 +21,7 @@ const GoogleButton = ({ variant = "primary", prompt, href }: IGoogleButton) => {
     border: ${variant && "1px solid rgb(207, 217, 222)"};
     `);
   return (
-    <a href={href} style={{ marginBottom: "1rem" }}>
+    <a href={`https://accounts.google.com/o/oauth2/v2/auth?client_id=${import.meta.env.VITE_GOOGLE_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_API_URL}google/oauth2callback&response_type=code&include_granted_scopes=true&state=${state}&scope=https://www.googleapis.com/auth/userinfo.email`} style={{ marginBottom: "1rem" }}>
         <CButton variant="outlined" startIcon={<GoogleIcon />}>
             {prompt} with Google
         </CButton>

@@ -1,14 +1,8 @@
-export interface IFirstSignup {
+export interface ICreateUser {
   name: string;
   email: string;
-  year: number;
-  day: number;
-  month: number;
-}
-
-export interface ISecondSignup {
+  birthDate: string;
   username: string;
-  email: string;
   password: string;
 }
 

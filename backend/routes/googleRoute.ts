@@ -11,7 +11,7 @@ router.get("/oauth2callback", async (req, res) => {
   const client = new OAuth2Client({
     clientId: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    redirectUri: "http://localhost:8000/api/google/oauth2callback",
+    redirectUri: process.env.GOOGLE_REDIRECT_URI,
   });
 
   // Exchange the authorization code for access and refresh tokens
