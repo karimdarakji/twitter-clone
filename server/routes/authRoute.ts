@@ -1,24 +1,23 @@
 import express from "express";
-import {
+import AuthController, {
   handleUserActivation,
-  handleLogin,
   handleRefreshToken,
-  handleLogout,
-  createUser,
   getEmail,
 } from "../controllers/authController";
 
+const authController = new AuthController();
+
 const router = express.Router();
 
-router.post("/create", createUser);
+router.post("/create", authController.create);
 
 router.post("/activate", handleUserActivation);
 
-router.post("/login", handleLogin);
+router.post("/login", authController.login);
 
 router.post("/refresh", handleRefreshToken);
 
-router.post("/logout", handleLogout);
+router.post("/logout", authController.logout);
 
 router.post("/user/email", getEmail);
 

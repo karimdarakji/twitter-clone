@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import SignupModal from "../Components/Modals/SignupModal/SignupModal";
+import SignupModal from "../Components/Modals/SignupModal";
 
 import welcome from "../public/welcome.png";
 import logo from "../public/logo.png";
@@ -17,8 +17,8 @@ export default function Welcome() {
 
   return (
     <>
-      <Grid container>
-        <Grid item md={6} sx={{ backgroundImage: `url(${welcome})`, backgroundRepeat: "no-repeat", height: "100vh", backgroundSize: "cover" }} />
+      <Grid container height={"100vh"}>
+        <Grid item md={6} sx={{ backgroundImage: `url(${welcome})`, backgroundRepeat: "no-repeat", backgroundSize: "cover", backgroundPosition: "center" }} />
         <Grid
           item
           md={6}

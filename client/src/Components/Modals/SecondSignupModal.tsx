@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import { Link, useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -12,14 +11,14 @@ import {
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
-import logo from "../../../public/logo.png";
+import logo from "../../public/logo.png";
 
-import { secondSignupSchema } from "../../../Yup/Schemas";
-import CustomButton from "../../CustomButton";
-import CustomAlert from "../../Alert";
-import { validatePassword } from "../../../Services/password-validator";
+import { secondSignupSchema } from "../../Yup/Schemas";
+import CustomButton from "../CustomButton";
+import CustomAlert from "../Alert";
+import { validatePassword } from "../../Services/password-validator";
 import moment from "moment";
-import { useCreateUserMutation } from "../../../redux/auth";
+import { useCreateUserMutation } from "../../redux/auth";
 
 interface ISecondSignup {
   show: boolean;
@@ -31,10 +30,11 @@ interface ISecondSignup {
     month: string,
     day: string
   };
+  resetForm: () => void
 }
 
-export default function SecondSignup({ show, onHide, data }: ISecondSignup) {
-  const [createUser, { data: userData, error, isSuccess }] = useCreateUserMutation();
+export default function SecondSignup({ show, onHide, data, resetForm }: ISecondSignup) {
+  const [createUser, { error, isSuccess }] = useCreateUserMutation();
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -49,10 +49,12 @@ export default function SecondSignup({ show, onHide, data }: ISecondSignup) {
   });
 
   useEffect(() => {
-    if (userData) {
+    if (isSuccess) {
+      formik.resetForm();
+      resetForm()
       onHide();
     }
-  }, [userData]);
+  }, [isSuccess]);
 
   const addUser = async (values: { username: string, password: string }) => {
     const userObject = {

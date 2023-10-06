@@ -1,6 +1,6 @@
 import { Button, Dialog, DialogContent, Divider, TextField, Typography } from '@mui/material'
 import React from 'react'
-import ModalHeader from './ModalHeader'
+import ModalHeader from './HeaderModal'
 import GoogleButton from '../Buttons/GoogleButton'
 import CustomButton from '../CustomButton'
 

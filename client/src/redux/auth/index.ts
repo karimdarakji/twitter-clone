@@ -3,7 +3,7 @@ import {
   ICreateUser,
   ILogin,
   IRefreshTokenApiReturn,
-} from "./../types";
+} from "../types";
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { BaseQuery } from "../utils";
 

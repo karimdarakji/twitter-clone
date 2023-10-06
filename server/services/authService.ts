@@ -1,15 +1,20 @@
 import bcrypt from "bcrypt";
 import { setAccessToken, setRefreshToken } from "../utils/authenticate";
-import User from "../models/User";
 import Joi from "joi";
 import { ForbiddenError, NotFoundError } from "../utils/errors";
+import UserRepository from "../repositories/userRepository";
+import Service from "./service";
+import { UserDocument } from "../models/User";
 
 const userSchema = Joi.object({
   usernameOrEmail: Joi.string().required(),
 });
 
-class AuthService {
-  static async validateLogin(
+class AuthService extends Service<UserDocument> {
+  constructor() {
+    super(new UserRepository());
+  }
+  async validateLogin(
     usernameOrEmail: string,
     password: string,
     currentRefreshToken: string,
@@ -20,13 +25,16 @@ class AuthService {
     if (error) {
       throw new NotFoundError(error.details[0].message);
     }
-    const foundUser = await User.findOne({ email: usernameOrEmail });
+    const foundUser = await this.repository.findOne({ email: usernameOrEmail });
     if (!foundUser) {
       throw new NotFoundError("Incorrect username or password");
     }
 
     if (!isOAuth) {
-      const checkPassword = await bcrypt.compare(password, foundUser?.password);
+      const checkPassword = await bcrypt.compare(
+        password,
+        foundUser?.password as string
+      );
       if (!checkPassword) {
         throw new NotFoundError("Incorrect username or password");
       }
@@ -49,9 +57,9 @@ class AuthService {
         );
 
     if (currentRefreshToken) {
-      const foundToken = await User.findOne({
-        refreshToken: currentRefreshToken,
-      }).exec();
+      const foundToken = await this.repository.findOne({
+        refreshToken: [currentRefreshToken],
+      });
 
       // Detected refresh token reuse!
       if (!foundToken) {

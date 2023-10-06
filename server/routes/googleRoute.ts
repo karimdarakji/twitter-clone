@@ -4,6 +4,7 @@ import { OAuth2Client } from "google-auth-library";
 import { AuthService } from "../services/authService";
 import { cookieConfig } from "../utils/authenticate";
 const router = express.Router();
+const authService = new AuthService();
 
 router.get("/oauth2callback", async (req, res) => {
   const { code, state } = req.query as { code: string; state: string };
@@ -30,7 +31,7 @@ router.get("/oauth2callback", async (req, res) => {
       });
     }
     // Use AuthService to validate the login
-    const loginResult = await AuthService.validateLogin(
+    const loginResult = await authService.validateLogin(
       email as string,
       "",
       "",

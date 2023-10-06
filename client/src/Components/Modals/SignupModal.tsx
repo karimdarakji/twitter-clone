@@ -15,15 +15,15 @@ import {
 
 import { useFormik } from "formik";
 
-import { years, days, months } from "../../../Services/getDates";
+import { years, days, months } from "../../Services/getDates";
 
-import SecondSignup from "../SecondStepSignupModal/SecondSignup";
+import SecondSignup from "./SecondSignupModal";
 
-import CustomButton from "../../CustomButton";
-import { signupSchema } from "../../../Yup/Schemas";
-import ModalHeader from "../ModalHeader";
-import GoogleButton from "../../Buttons/GoogleButton";
-import { useGetUserEmailMutation } from "../../../redux/auth";
+import CustomButton from "../CustomButton";
+import { signupSchema } from "../../Yup/Schemas";
+import ModalHeader from "./HeaderModal";
+import GoogleButton from "../Buttons/GoogleButton";
+import { useGetUserEmailMutation } from "../../redux/auth";
 
 interface ISignUpModal {
   show: boolean;
@@ -32,7 +32,6 @@ interface ISignUpModal {
 
 const SignupModal = ({ show, onHide }: ISignUpModal) => {
   const [getUserEmail, { error }] = useGetUserEmailMutation();
-  console.log(error)
   const [models, setModels] = useState({
     oauth: true,
     create: false,
@@ -210,6 +209,7 @@ const SignupModal = ({ show, onHide }: ISignUpModal) => {
           setModels((model) => ({...model, additionalCreate: false, oauth: true}));
         }}
         data={formik.values}
+        resetForm={formik.resetForm}
       />
     </>
   );
