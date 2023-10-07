@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import express, { Application } from "express";
+import express, { Application, NextFunction, Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import path from "path";
@@ -12,6 +12,7 @@ import "dotenv/config";
 import { verifyJWT } from "./middleware/verifyJWT";
 import { corsOptions } from "./config/corsOptions";
 import { credentials } from "./middleware/credentials";
+import CustomError from "./utils/errors";
 
 const PORT = process.env.PORT || 8000;
 
@@ -43,6 +44,19 @@ app.use("/api", UserRoutes);
 
 app.use(verifyJWT);
 //app.use("/api/tweets", TweetsRoutes);
+
+// Error middleware
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  // If it's not a CustomError, it's an unexpected error.
+  // This could be a programming error or some other exception.
+  if (!(err instanceof CustomError)) {
+    console.error("Unexpected Error:", err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+
+  // For CustomErrors, use the provided message and status code.
+  res.status(err.statusCode).json({ message: err.message });
+});
 
 mongoose
   .connect(process.env.MONGO_DB_CONNECTION_STRING ?? "")
