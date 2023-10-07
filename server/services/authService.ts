@@ -7,7 +7,7 @@ import Service from "./service";
 import { UserDocument } from "../models/User";
 
 const userSchema = Joi.object({
-  usernameOrEmail: Joi.string().required(),
+  emailorUsername: Joi.string().required(),
 });
 
 export default class AuthService extends Service<UserDocument> {
@@ -15,17 +15,17 @@ export default class AuthService extends Service<UserDocument> {
     super(new UserRepository());
   }
   async validateLogin(
-    usernameOrEmail: string,
+    emailorUsername: string,
     password: string,
     currentRefreshToken: string,
     isOAuth: boolean = false
   ) {
-    const { error } = userSchema.validate({ usernameOrEmail });
+    const { error } = userSchema.validate({ emailorUsername });
 
     if (error) {
       throw new NotFoundError(error.details[0].message);
     }
-    const foundUser = await this.repository.findOne({ email: usernameOrEmail });
+    const foundUser = await this.repository.findOne({ email: emailorUsername });
     if (!foundUser) {
       throw new NotFoundError("Incorrect username or password");
     }

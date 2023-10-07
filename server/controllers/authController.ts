@@ -16,6 +16,11 @@ import User from "../models/User";
 import UserActivationService from "../services/userActivationService";
 import AuthService from "../services/authService";
 import { OAuth2Client } from "google-auth-library";
+import {
+  ForbiddenError,
+  NotFoundError,
+  ValidationError,
+} from "../utils/errors";
 
 export default class AuthController {
   private authService;
@@ -36,7 +41,7 @@ export default class AuthController {
 
     const { error } = schema.validate(req.body);
 
-    if (error) return res.status(403).send(error.details[0].message);
+    if (error) return new ValidationError(error.details[0].message);
 
     const userFromBody = {
       ...req.body,
@@ -49,11 +54,11 @@ export default class AuthController {
         username: userFromBody.username,
       });
       if (user?.username && user?.active) {
-        return res.status(404).send("Username already taken");
+        return new ForbiddenError("Username already taken");
       }
 
       if (user?.email && user?.active) {
-        return res.status(404).send("Email already taken");
+        return new ForbiddenError("Email already taken");
       }
 
       // fill user id and token in collection
@@ -153,11 +158,11 @@ export default class AuthController {
 
   login = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { usernameOrEmail, password } = req.body;
+      const { emailorUsername, password } = req.body;
       const currentRefreshToken = req.cookies?.jwt;
       // Use AuthService to validate the login
       const loginResult = await this.authService.validateLogin(
-        usernameOrEmail,
+        emailorUsername,
         password,
         currentRefreshToken
       );
@@ -170,11 +175,9 @@ export default class AuthController {
       res.cookie("jwt", refreshToken, cookieConfig);
 
       // Respond with access token
-      res.json({ accessToken });
+      res.status(200).json({ accessToken });
     } catch (error: any) {
-      return res
-        .status(error.statusCode || 500)
-        .json({ message: error.message });
+      next(error);
     }
   };
 

@@ -59,7 +59,7 @@ export default function Welcome() {
           </Grid>
         </Grid>
       </Grid>
-      <LoginModal open={modals.login} setModal={setModals} />
+      <LoginModal open={modals.login} showSignup={() => setModals({login: false, signup: true})} onHide={() => setModals((modal) => ({...modal, login: false}))} />
       <SignupModal show={modals.signup} onHide={() => setModals((modal) => ({...modal, signup: false}))} />
     </>
   );
