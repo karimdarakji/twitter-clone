@@ -5,10 +5,10 @@ interface ICustomAlert {
   severity?: AlertColor;
   children?: any;
   action?: any;
-  key?: any;  // Add key prop here
+  id?: string
 }
 
-const CustomAlert = ({ severity, children, action, key }: ICustomAlert) => {
+const CustomAlert = ({ severity, children, action, id }: ICustomAlert) => {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ const CustomAlert = ({ severity, children, action, key }: ICustomAlert) => {
     }, 5000);
 
     return () => clearTimeout(timer);  // Clear timer when component is unmounted or if key changes
-  }, [key]);  // Effect dependency on key
+  }, [id]);  // Effect dependency on key
 
   if (!visible) return null;
 

@@ -21,7 +21,7 @@ const GoogleButton = ({ variant = "primary", prompt, state }: IGoogleButton) => 
     border: ${variant && "1px solid rgb(207, 217, 222)"};
     `);
   return (
-    <a href={`https://accounts.google.com/o/oauth2/v2/auth?client_id=${import.meta.env.VITE_GOOGLE_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_API_URL}google/oauth2callback&response_type=code&include_granted_scopes=true&state=${state}&scope=https://www.googleapis.com/auth/userinfo.email`} style={{ marginBottom: "1rem" }}>
+    <a href={`${import.meta.env.VITE_GOOGLE_AUTH_URL}?client_id=${import.meta.env.VITE_GOOGLE_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_GOOGLE_REDIRECT_URI}&response_type=code&include_granted_scopes=true&state=${state}&scope=${import.meta.env.VITE_GOOGLE_AUTH_SCOPE}`} style={{ marginBottom: "1rem" }}>
         <CButton variant="outlined" startIcon={<GoogleIcon />}>
             {prompt} with Google
         </CButton>

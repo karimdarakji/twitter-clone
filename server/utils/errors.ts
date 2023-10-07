@@ -1,4 +1,4 @@
-class CustomError extends Error {
+export default class CustomError extends Error {
   statusCode: number;
 
   constructor(message: string, statusCode: number) {
@@ -25,4 +25,10 @@ class UnauthorizedError extends CustomError {
   }
 }
 
-export { NotFoundError, ForbiddenError, UnauthorizedError };
+class ValidationError extends CustomError {
+  constructor(message = "There was a validation error") {
+    super(message, 400);
+  }
+}
+
+export { NotFoundError, ForbiddenError, UnauthorizedError, ValidationError };

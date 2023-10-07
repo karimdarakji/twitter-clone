@@ -12,7 +12,7 @@ export interface IActivateUser {
 }
 
 export interface ILogin {
-  usernameOrEmail: string;
+  emailorUsername: string;
   password: string;
 }
 
