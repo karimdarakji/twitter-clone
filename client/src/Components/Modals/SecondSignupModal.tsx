@@ -72,7 +72,7 @@ export default function SecondSignup({ show, onHide, data, resetForm }: ISecondS
 
   return (
     <>
-      {error?.data && <CustomAlert severity="error">{error?.data}</CustomAlert>}
+      {error?.data && <CustomAlert key={`error-${Date.now()}`} severity="error">{error?.data}</CustomAlert>}
       {isSuccess && (
         <CustomAlert
           severity="success"

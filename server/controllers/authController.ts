@@ -10,15 +10,19 @@ import {
   setAccessToken,
   setRefreshToken,
 } from "../utils/authenticate";
-import AccountsActivation from "../models/accountsActivation";
+import AccountsActivation from "../models/UserActivation";
 import { NextFunction, Request, Response } from "express";
-import { AuthService } from "../services/authService";
 import User from "../models/User";
+import UserActivationService from "../services/userActivationService";
+import AuthService from "../services/authService";
+import { OAuth2Client } from "google-auth-library";
 
 export default class AuthController {
   private authService;
+  private userActivationService;
   constructor() {
     this.authService = new AuthService();
+    this.userActivationService = new UserActivationService();
   }
 
   create = async (req: Request, res: Response, next: NextFunction) => {
@@ -32,7 +36,8 @@ export default class AuthController {
 
     const { error } = schema.validate(req.body);
 
-    if (error) return res.send(error.details[0].message);
+    if (error) return res.status(403).send(error.details[0].message);
+
     const userFromBody = {
       ...req.body,
       image: "",
@@ -40,19 +45,33 @@ export default class AuthController {
 
     try {
       // check if username is taken from another user
-      const checkUsernameIfTaken = await this.authService.findOne({
+      const user = await this.authService.findOne({
         username: userFromBody.username,
       });
-      if (checkUsernameIfTaken) {
+      if (user?.username && user?.active) {
         return res.status(404).send("Username already taken");
       }
 
-      // get user by email and update his fields
-      const userEmail = await this.authService.findOne({
-        email: userFromBody.email,
-      });
-      if (userEmail) {
+      if (user?.email && user?.active) {
         return res.status(404).send("Email already taken");
+      }
+
+      // fill user id and token in collection
+      const token =
+        crypto.randomBytes(48).toString("hex") + "-X-X-" + userFromBody._id;
+      // check password and return activation code if user is not active
+      if (user && !user?.active) {
+        const isPasswordCorrect = await bcrypt.compare(
+          userFromBody.password,
+          user.password as string
+        );
+        if (isPasswordCorrect) {
+          await this.userActivationService.update(user._id as string, {
+            token,
+          });
+          delete userFromBody.password;
+          return res.status(200).json(userFromBody);
+        }
       }
       // hash password
       const salt = await bcrypt.genSalt(10);
@@ -62,23 +81,10 @@ export default class AuthController {
       userFromBody.password = password;
       const newUser = await this.authService.create(userFromBody);
 
-      // fill user id and token in collection
-      const token =
-        crypto.randomBytes(48).toString("hex") + "-X-X-" + userFromBody._id;
-      const sendActivationToken = await AccountsActivation.findOne({
-        user_id: newUser._id,
+      await this.userActivationService.create({
+        userId: newUser._id,
+        token,
       });
-      if (sendActivationToken) {
-        sendActivationToken.token = token;
-        sendActivationToken.updatedAt = new Date();
-        sendActivationToken.save();
-      } else {
-        const userActivationFields = new AccountsActivation({
-          user_id: newUser._id,
-          token: token,
-        });
-        userActivationFields.save();
-      }
       // await sendMail.send(
       //   signupTemplate({
       //     name: getUserByMail.name,
@@ -86,10 +92,62 @@ export default class AuthController {
       //     activationCode: token,
       //   })
       // );
-      delete userFromBody.password;
-      return res.status(200).json(userFromBody);
+      delete newUser.password;
+      return res.status(200).json(newUser);
     } catch (error) {
       next(error);
+    }
+  };
+
+  googleOAuth = async (req: Request, res: Response, next: NextFunction) => {
+    const { code, state } = req.query as { code: string; state: string };
+
+    const client = new OAuth2Client({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      redirectUri: process.env.GOOGLE_REDIRECT_URI,
+    });
+
+    // Exchange the authorization code for access and refresh tokens
+    const { tokens } = await client.getToken(code);
+    if (tokens?.access_token) {
+      const userInfo = await client.getTokenInfo(tokens.access_token);
+      const user = await this.authService.findOne({ email: userInfo.email });
+      if (!user) {
+        if (state === "signin") {
+          return res.send(
+            "<p>Sorry you have to sign up first!</p><br/><a href='http://localhost:3000'>Go back</a>"
+          );
+        }
+        const ticket = await client.verifyIdToken({
+          idToken: tokens.id_token as string,
+        });
+        const payload = ticket.getPayload();
+        await this.authService.create({
+          name: payload?.name,
+          email: payload?.email,
+          username: payload?.email,
+          image: payload?.picture,
+          password: "",
+          active: 1,
+        });
+      }
+      // Use AuthService to validate the login
+      const loginResult = await this.authService.validateLogin(
+        userInfo.email as string,
+        "",
+        "",
+        true
+      );
+      // If login fails, AuthService should throw an error which is caught and passed to next(error)
+      const { refreshToken } = loginResult;
+
+      // Clear old cookie and set a new one
+      res.clearCookie("jwt", cookieConfig);
+      res.cookie("jwt", refreshToken, cookieConfig);
+
+      // Respond with access token
+      return res.redirect("http://localhost:3000/home");
     }
   };
 
@@ -142,6 +200,19 @@ export default class AuthController {
 
     res.clearCookie("jwt", cookieConfig);
     res.sendStatus(204);
+  };
+
+  getEmail = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email } = req.body;
+      const user = await this.authService.findOne({ email });
+      if (user && user.active) {
+        return res.status(404).send("Email already in use");
+      }
+      return res.status(200).send({ email });
+    } catch (error) {
+      next(error);
+    }
   };
 }
 
@@ -227,7 +298,7 @@ export const handleUserActivation = async (
 
     if (checkToken.token === token) {
       // set user to active
-      const userInfo = await User.findById(checkToken.user_id);
+      const userInfo = await User.findById(checkToken.userId);
       if (userInfo) {
         if (userInfo.active === 1) {
           return res.status(404).send("Account already activated");
@@ -246,23 +317,6 @@ export const handleUserActivation = async (
         .status(404)
         .send("Sorry, your account can't be activated at the moment!");
     }
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const getEmail = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { email } = req.body;
-    const user = await User.findOne({ email });
-    if (user) {
-      return res.status(404).send("Email already in use");
-    }
-    return res.status(200).send({ email });
   } catch (error) {
     next(error);
   }

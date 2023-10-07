@@ -1,6 +1,6 @@
 # 🌟 Twitter Clone 💻
 
-![Twitter](./frontend/public/twitter.png)
+![Twitter](./client/public/twitter.png)
 
 This is a project utilizing React with TypeScript, RTK Query, MUI, and ExpressJS with TypeScript.
 
@@ -21,17 +21,17 @@ Follow these steps to install this project:
 git clone https://github.com/karimdarakji/twitter-clone.git
 ```
 
-2. Navigate to the frontend directory and install the required npm packages
+2. Navigate to the client directory and install the required npm packages
 
 ```
-cd frontend
+cd client
 npm install
 ```
 
-3. Navigate to the backend directory and install the required npm packages
+3. Navigate to the server directory and install the required npm packages
 
 ```
-cd backend
+cd server
 npm install
 ```
 
@@ -40,14 +40,14 @@ npm install
 1. Start the Express server:
 
 ```
-cd backend
+cd server
 npm start
 ```
 
 2. In another terminal, start the React application:
 
 ```
-cd frontend
+cd client
 npm start
 ```
 
@@ -61,7 +61,7 @@ This project uses the following technologies:
 - [ExpressJS](https://expressjs.com/) with TypeScript - A web application framework for Node.js
 - [RTK Query](https://redux-toolkit.js.org/rtk-query/overview) - A powerful data fetching and caching tool
 - [Mui (Material-UI)](https://mui.com/) - A popular React UI framework
-- [React Scripts](https://www.npmjs.com/package/react-scripts) - Configuration and scripts for Create React App
+- [Vite](https://vitejs.dev/) - Next Generation Frontend Tooling
 
 ## 📮 Contact
 

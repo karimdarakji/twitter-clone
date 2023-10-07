@@ -85,7 +85,7 @@ const SignupModal = ({ show, onHide }: ISignUpModal) => {
 
           {
             models.oauth && <>
-            <GoogleButton prompt="Sign up" state="signin" />
+            <GoogleButton prompt="Sign up" state="signup" />
             <br />
             <br />
             <Divider sx={{ width: "18rem"}}>or</Divider>

@@ -7,7 +7,11 @@ export default abstract class Service<T> {
     return await this.repository.findOne(fields);
   }
 
-  async create(item: T) {
+  async create(item: Partial<T>) {
     return await this.repository.create(item);
+  }
+
+  async update(_id: string, item: Partial<T>) {
+    return await this.repository.update(_id, item);
   }
 }

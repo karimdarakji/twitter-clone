@@ -1,12 +1,26 @@
+import React, { useState, useEffect } from 'react';
 import { Alert, AlertColor, AlertTitle } from "@mui/material";
 
 interface ICustomAlert {
   severity?: AlertColor;
   children?: any;
   action?: any;
+  key?: any;  // Add key prop here
 }
 
-const CustomAlert = ({ severity, children, action }: ICustomAlert) => {
+const CustomAlert = ({ severity, children, action, key }: ICustomAlert) => {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setVisible(false);
+    }, 5000);
+
+    return () => clearTimeout(timer);  // Clear timer when component is unmounted or if key changes
+  }, [key]);  // Effect dependency on key
+
+  if (!visible) return null;
+
   return (
     <Alert
       severity={severity}

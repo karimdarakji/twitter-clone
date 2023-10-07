@@ -10,7 +10,7 @@ const userSchema = Joi.object({
   usernameOrEmail: Joi.string().required(),
 });
 
-class AuthService extends Service<UserDocument> {
+export default class AuthService extends Service<UserDocument> {
   constructor() {
     super(new UserRepository());
   }
@@ -78,5 +78,3 @@ class AuthService extends Service<UserDocument> {
     };
   }
 }
-
-export { AuthService };

@@ -2,7 +2,6 @@ import express from "express";
 import AuthController, {
   handleUserActivation,
   handleRefreshToken,
-  getEmail,
 } from "../controllers/authController";
 
 const authController = new AuthController();
@@ -19,6 +18,8 @@ router.post("/refresh", handleRefreshToken);
 
 router.post("/logout", authController.logout);
 
-router.post("/user/email", getEmail);
+router.post("/user/email", authController.getEmail);
+
+router.get("/google/oauth2callback", authController.googleOAuth);
 
 export default router;
