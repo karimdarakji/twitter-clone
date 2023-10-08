@@ -1,6 +1,6 @@
-import React from 'react'
-import { DialogTitle, Grid } from '@mui/material';
-import logo from "../../public/logo.png";
+import React from "react";
+import { DialogTitle, Grid } from "@mui/material";
+import logo from "../../assets/logo.png";
 
 const ModalHeader = () => {
   return (
@@ -19,7 +19,7 @@ const ModalHeader = () => {
         />
       </Grid>
     </DialogTitle>
-  )
-}
+  );
+};
 
-export default ModalHeader
+export default ModalHeader;

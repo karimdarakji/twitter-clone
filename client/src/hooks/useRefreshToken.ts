@@ -1,4 +1,4 @@
-import { useRefreshTokenMutation } from "../redux/auth";
+import { useRefreshTokenMutation } from "../redux/auth/authApi";
 import useAuth from "./useAuth";
 
 const useRefreshToken = () => {

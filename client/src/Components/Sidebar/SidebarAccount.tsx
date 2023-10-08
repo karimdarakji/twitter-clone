@@ -8,12 +8,12 @@ import {
   Typography,
 } from "@mui/material";
 import { RiMoreFill } from "react-icons/ri";
-import { useLogoutMutation } from "../../redux/auth";
+import { useLogoutMutation } from "../../redux/auth/authApi";
 import CustomAlert from "../Alert";
 import { useNavigate } from "react-router-dom";
 
 const SidebarAccount = ({ user }: { user: IUser }) => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -25,16 +25,16 @@ const SidebarAccount = ({ user }: { user: IUser }) => {
 
   const [logoutFunction, { error }] = useLogoutMutation();
 
-  if(error) {
+  if (error) {
     <CustomAlert severity="error">
-        Something went wrong, Please try again!
-    </CustomAlert>
+      Something went wrong, Please try again!
+    </CustomAlert>;
   }
 
   const logout = async () => {
     logoutFunction()
       .unwrap()
-      .then(() => navigate(0))
+      .then(() => navigate(0));
   };
 
   return (

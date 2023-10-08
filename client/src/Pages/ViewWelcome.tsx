@@ -1,15 +1,15 @@
 import { useState } from "react";
 
-import SignupModal from "../Components/Modals/SignupModal";
+import SignupModal from "../components/Modals/SignupModal";
 
-import welcome from "../public/welcome.png";
-import logo from "../public/logo.png";
+import welcome from "../assets/welcome.png";
+import logo from "../assets/logo.png";
 import { Divider, Grid, Typography } from "@mui/material";
-import CustomButton from "../Components/CustomButton";
-import GoogleButton from "../Components/Buttons/GoogleButton";
-import LoginModal from "../Components/Modals/LoginModal";
+import CustomButton from "../components/CustomButton";
+import GoogleButton from "../components/Buttons/GoogleButton";
+import LoginModal from "../components/Modals/LoginModal";
 import { useLocation } from "react-router-dom";
-import CustomAlert from "../Components/Alert";
+import CustomAlert from "../components/Alert";
 
 export default function Welcome() {
   const [modals, setModals] = useState({

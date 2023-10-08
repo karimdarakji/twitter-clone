@@ -10,5 +10,8 @@ export const signupSchema = yup.object().shape({
 
 export const secondSignupSchema = yup.object().shape({
   username: yup.string().required("Invalid username"),
-  password: yup.string().required("Required"),
+  password: yup
+    .string()
+    .matches(/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/)
+    .required("Required"),
 });

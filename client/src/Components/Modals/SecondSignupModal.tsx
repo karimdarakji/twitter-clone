@@ -11,29 +11,33 @@ import {
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
-import logo from "../../public/logo.png";
+import logo from "../../assets/logo.png";
 
-import { secondSignupSchema } from "../../Yup/Schemas";
+import { secondSignupSchema } from "../Forms/Yup/Schemas";
 import CustomButton from "../CustomButton";
 import CustomAlert from "../Alert";
-import { validatePassword } from "../../Services/password-validator";
 import moment from "moment";
-import { useCreateUserMutation } from "../../redux/auth";
+import { useCreateUserMutation } from "../../redux/auth/authApi";
 
 interface ISecondSignup {
   show: boolean;
   onHide: () => void;
   data: {
-    name: string,
-    email: string,
-    year: string,
-    month: string,
-    day: string
+    name: string;
+    email: string;
+    year: string;
+    month: string;
+    day: string;
   };
-  resetForm: () => void
+  resetForm: () => void;
 }
 
-export default function SecondSignup({ show, onHide, data, resetForm }: ISecondSignup) {
+export default function SecondSignup({
+  show,
+  onHide,
+  data,
+  resetForm,
+}: ISecondSignup) {
   const [createUser, { error, isSuccess }] = useCreateUserMutation();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -51,12 +55,12 @@ export default function SecondSignup({ show, onHide, data, resetForm }: ISecondS
   useEffect(() => {
     if (isSuccess) {
       formik.resetForm();
-      resetForm()
+      resetForm();
       onHide();
     }
   }, [isSuccess]);
 
-  const addUser = async (values: { username: string, password: string }) => {
+  const addUser = async (values: { username: string; password: string }) => {
     const userObject = {
       name: data.name,
       username: values.username,
@@ -72,11 +76,13 @@ export default function SecondSignup({ show, onHide, data, resetForm }: ISecondS
 
   return (
     <>
-      {error?.data?.message && <CustomAlert id={`error-${Date.now()}`} severity="error">{error.data.message}</CustomAlert>}
+      {error?.data?.message && (
+        <CustomAlert id={`error-${Date.now()}`} severity="error">
+          {error.data.message}
+        </CustomAlert>
+      )}
       {isSuccess && (
-        <CustomAlert
-          severity="success"
-        >
+        <CustomAlert severity="success">
           An Email has been sent for verification, please check your inbox or
           spam folder!
         </CustomAlert>
@@ -86,7 +92,7 @@ export default function SecondSignup({ show, onHide, data, resetForm }: ISecondS
         open={show}
         onClose={() => {
           onHide();
-          formik.resetForm()
+          formik.resetForm();
         }}
         PaperProps={{ style: { overflowX: "hidden" } }}
       >
@@ -137,14 +143,12 @@ export default function SecondSignup({ show, onHide, data, resetForm }: ISecondS
               label="Password"
               value={formik.values.password}
               onChange={formik.handleChange}
-              error={
-                Boolean(formik.errors.password) ||
-                validatePassword(formik.values.password)
-              }
+              error={Boolean(formik.errors.password)}
               helperText={
-                (formik.errors.password && "Password is required") ||
-                (validatePassword(formik.values.password) &&
-                  "Password must contain at least: one lowercase letter, one uppercase letter, one number and one special character")
+                !formik.values.password
+                  ? "Password is required"
+                  : formik.errors.password &&
+                    "Password must contain at least: one lowercase letter, one uppercase letter, one number and one special character"
               }
             />
             <div className="text-center">
@@ -152,8 +156,7 @@ export default function SecondSignup({ show, onHide, data, resetForm }: ISecondS
                 type="submit"
                 disabled={
                   Object.values(formik.values).every((v) => v.length === 0) ||
-                  Object.keys(formik.errors).length > 0 ||
-                  validatePassword(formik.values.password)
+                  Object.keys(formik.errors).length > 0
                 }
               >
                 Sign up
