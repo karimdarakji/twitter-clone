@@ -7,8 +7,8 @@ export interface ICreateUser {
 }
 
 export interface IActivateUser {
-  user_id?: string;
-  token?: string;
+  userId: string;
+  token: string;
 }
 
 export interface ILogin {

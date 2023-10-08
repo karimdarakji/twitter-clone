@@ -1,3 +1,4 @@
+require("dotenv").config();
 import mongoose from "mongoose";
 import express, { Application, NextFunction, Request, Response } from "express";
 import cors from "cors";
@@ -59,11 +60,8 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 mongoose
-  .connect(process.env.MONGO_DB_CONNECTION_STRING ?? "")
+  .connect(process.env.MONGO_DB_CONNECTION_STRING as string)
   .then(() => console.log("Connected to MongoDB"))
   .catch((error) => console.error(error));
-
-mongoose.set("useNewUrlParser", true);
-mongoose.set("useUnifiedTopology", true);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

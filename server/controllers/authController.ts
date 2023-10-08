@@ -21,6 +21,8 @@ import {
   NotFoundError,
   ValidationError,
 } from "../utils/errors";
+import Mailer from "../utils/nodemailer";
+const mailer = new Mailer();
 
 export default class AuthController {
   private authService;
@@ -61,9 +63,6 @@ export default class AuthController {
         return new ForbiddenError("Email already taken");
       }
 
-      // fill user id and token in collection
-      const token =
-        crypto.randomBytes(48).toString("hex") + "-X-X-" + userFromBody._id;
       // check password and return activation code if user is not active
       if (user && !user?.active) {
         const isPasswordCorrect = await bcrypt.compare(
@@ -71,12 +70,24 @@ export default class AuthController {
           user.password as string
         );
         if (isPasswordCorrect) {
-          await this.userActivationService.update(user._id as string, {
-            token,
+          const token =
+            crypto.randomBytes(48).toString("hex") + "-X-X-" + user._id;
+          await this.userActivationService.findOneAndUpdate(
+            { userId: user._id as string },
+            {
+              token,
+            },
+            { upsert: true }
+          );
+          await mailer.userActivationMailTemplate({
+            name: user.name,
+            email: user.email,
+            activationCode: token,
           });
           delete userFromBody.password;
           return res.status(200).json(userFromBody);
         }
+        throw new NotFoundError("Incorrect credentials");
       }
       // hash password
       const salt = await bcrypt.genSalt(10);
@@ -86,17 +97,17 @@ export default class AuthController {
       userFromBody.password = password;
       const newUser = await this.authService.create(userFromBody);
 
+      const token =
+        crypto.randomBytes(48).toString("hex") + "-X-X-" + newUser._id;
       await this.userActivationService.create({
         userId: newUser._id,
         token,
       });
-      // await sendMail.send(
-      //   signupTemplate({
-      //     name: getUserByMail.name,
-      //     email: getUserByMail.email,
-      //     activationCode: token,
-      //   })
-      // );
+      await mailer.userActivationMailTemplate({
+        name: newUser.name,
+        email: newUser.email,
+        activationCode: token,
+      });
       delete newUser.password;
       return res.status(200).json(newUser);
     } catch (error) {
@@ -177,6 +188,39 @@ export default class AuthController {
       // Respond with access token
       res.status(200).json({ accessToken });
     } catch (error: any) {
+      next(error);
+    }
+  };
+
+  activateUser = async (req: Request, res: Response, next: NextFunction) => {
+    const { userId, token } = req.body;
+
+    try {
+      // check token
+      const checkToken = await this.userActivationService.findOne({ userId });
+
+      if (!checkToken) {
+        throw new NotFoundError("User not found");
+      }
+
+      if (checkToken.token === token) {
+        // set user to active
+        const userInfo = await this.authService.findById(checkToken.userId);
+        if (userInfo) {
+          if (userInfo.active === 1) {
+            return new ForbiddenError("Account already activated!");
+          }
+          await this.authService.findByIdAndUpdate(userInfo._id, { active: 1 });
+        }
+        await this.userActivationService.findOneAndDelete({
+          userId,
+        });
+        return res.status(200).json("success");
+      }
+      return res
+        .status(404)
+        .send("Sorry, your account can't be activated at the moment!");
+    } catch (error) {
       next(error);
     }
   };
@@ -284,43 +328,4 @@ export const handleRefreshToken = async (
       res.json({ accessToken });
     }
   );
-};
-
-export const handleUserActivation = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { user_id, token } = req.body;
-
-  try {
-    // check token
-    const checkToken = await AccountsActivation.findOne({ user_id: user_id });
-
-    if (!checkToken) return res.status(404).send("User not found");
-
-    if (checkToken.token === token) {
-      // set user to active
-      const userInfo = await User.findById(checkToken.userId);
-      if (userInfo) {
-        if (userInfo.active === 1) {
-          return res.status(404).send("Account already activated");
-        } else {
-          userInfo.active = 1;
-          userInfo.save();
-          delete userInfo.password;
-        }
-      }
-      await AccountsActivation.findOneAndDelete({
-        user_id: user_id,
-      });
-      return res.status(200).json(userInfo);
-    } else {
-      return res
-        .status(404)
-        .send("Sorry, your account can't be activated at the moment!");
-    }
-  } catch (error) {
-    next(error);
-  }
 };
