@@ -1,18 +1,18 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { Box, Divider } from "@mui/material";
-import Header from "../Components/Header/Header";
+import Header from "../components/Header/Header";
 import { useUserQuery } from "../redux/user";
-import CustomAlert from "../Components/Alert";
-import TweetBox from "../Components/TweetBox/TweetBox";
+import CustomAlert from "../components/Alert";
+import TweetBox from "../components/TweetBox/TweetBox";
 
 const Home = () => {
   const { data: user, isLoading, isError } = useUserQuery();
 
-  if(isLoading || !user) {
-    return <p>Loading</p>
+  if (isLoading || !user) {
+    return <p>Loading</p>;
   }
-  if(isError) {
-    return <CustomAlert severity="error">Something went wrong.</CustomAlert>
+  if (isError) {
+    return <CustomAlert severity="error">Something went wrong.</CustomAlert>;
   }
   // const userInfo = getLocalStorage("ui");
 
@@ -100,6 +100,6 @@ const Home = () => {
       </div> */}
     </Box>
   );
-}
+};
 
 export default Home;

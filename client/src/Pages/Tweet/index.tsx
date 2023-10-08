@@ -11,7 +11,7 @@ import {
 
 //import { gettweet, liketweet, commenttweet } from "../../redux/actions";
 
-import TweetComments from "../../Components/Tweets";
+import TweetComments from "../../components/Tweets";
 
 function TweetPage() {
   // const userInfo = getLocalStorage('ui')

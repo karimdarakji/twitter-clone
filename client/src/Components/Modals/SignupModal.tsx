@@ -15,19 +15,19 @@ import {
 
 import { useFormik } from "formik";
 
-import { years, days, months } from "../../Services/getDates";
+import { years, days, months } from "../../utils/getDates";
 
 import SecondSignup from "./SecondSignupModal";
 
 import CustomButton from "../CustomButton";
-import { signupSchema } from "../../Yup/Schemas";
+import { signupSchema } from "../Forms/Yup/Schemas";
 import ModalHeader from "./HeaderModal";
 import GoogleButton from "../Buttons/GoogleButton";
-import { useGetUserEmailMutation } from "../../redux/auth";
+import { useGetUserEmailMutation } from "../../redux/auth/authApi";
 
 interface ISignUpModal {
   show: boolean;
-  onHide: () => void
+  onHide: () => void;
 }
 
 const SignupModal = ({ show, onHide }: ISignUpModal) => {
@@ -35,8 +35,8 @@ const SignupModal = ({ show, onHide }: ISignUpModal) => {
   const [models, setModels] = useState({
     oauth: true,
     create: false,
-    additionalCreate: false
-  })
+    additionalCreate: false,
+  });
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -46,7 +46,12 @@ const SignupModal = ({ show, onHide }: ISignUpModal) => {
       year: "",
     },
     validationSchema: signupSchema,
-    onSubmit: () => setModels((model) => ({...model, create: false, additionalCreate: true})),
+    onSubmit: () =>
+      setModels((model) => ({
+        ...model,
+        create: false,
+        additionalCreate: true,
+      })),
   });
 
   // Debounce the mutation call
@@ -73,28 +78,36 @@ const SignupModal = ({ show, onHide }: ISignUpModal) => {
         open={show}
         onClose={() => {
           onHide();
-          setModels({oauth: true, create: false, additionalCreate: false});
-          formik.resetForm()
-        }
-        }
+          setModels({ oauth: true, create: false, additionalCreate: false });
+          formik.resetForm();
+        }}
         PaperProps={{ style: { overflowX: "hidden" } }}
       >
         <ModalHeader />
         <DialogContent>
           <h2>Create your account</h2>
 
-          {
-            models.oauth && <>
-            <GoogleButton prompt="Sign up" state="signup" />
-            <br />
-            <br />
-            <Divider sx={{ width: "18rem"}}>or</Divider>
-            <br />
-            <CustomButton onClick={() => setModels((model) => ({...model, oauth: false, create: true}))}>Create account</CustomButton>
+          {models.oauth && (
+            <>
+              <GoogleButton prompt="Sign up" state="signup" />
+              <br />
+              <br />
+              <Divider sx={{ width: "18rem" }}>or</Divider>
+              <br />
+              <CustomButton
+                onClick={() =>
+                  setModels((model) => ({
+                    ...model,
+                    oauth: false,
+                    create: true,
+                  }))
+                }
+              >
+                Create account
+              </CustomButton>
             </>
-          }
-          {
-            models.create &&
+          )}
+          {models.create && (
             <form onSubmit={formik.handleSubmit}>
               <TextField
                 fullWidth
@@ -117,7 +130,9 @@ const SignupModal = ({ show, onHide }: ISignUpModal) => {
                   debouncedUpdate(e.target.value);
                 }}
                 error={Boolean(formik.errors.email) || !!error?.data}
-                helperText={formik.errors.email ? "Email Required" : error?.data}
+                helperText={
+                  formik.errors.email ? "Email Required" : error?.data
+                }
               />
 
               <h2>Date of birth</h2>
@@ -199,14 +214,18 @@ const SignupModal = ({ show, onHide }: ISignUpModal) => {
                 </CustomButton>
               </div>
             </form>
-          }
+          )}
         </DialogContent>
       </Dialog>
       <SecondSignup
         show={models.additionalCreate}
         onHide={() => {
           onHide();
-          setModels((model) => ({...model, additionalCreate: false, oauth: true}));
+          setModels((model) => ({
+            ...model,
+            additionalCreate: false,
+            oauth: true,
+          }));
         }}
         data={formik.values}
         resetForm={formik.resetForm}

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useActivateUserMutation } from "../redux/auth";
+import { useActivateUserMutation } from "../redux/auth/authApi";
 
 const ViewUserActivation = () => {
   const navigate = useNavigate();
