@@ -1,6 +1,5 @@
 import express from "express";
 import AuthController, {
-  handleUserActivation,
   handleRefreshToken,
 } from "../controllers/authController";
 
@@ -10,7 +9,7 @@ const router = express.Router();
 
 router.post("/create", authController.create);
 
-router.post("/activate", handleUserActivation);
+router.post("/activate", authController.activateUser);
 
 router.post("/login", authController.login);
 

@@ -17,10 +17,28 @@ export default abstract class BaseRepository<T> {
     return await this.model.create(item);
   }
 
-  async update(_id: string, item: Partial<T>) {
-    return await this.model.findByIdAndUpdate(_id, { $set: item } as
-      | UpdateWithAggregationPipeline
-      | UpdateQuery<T>);
+  async findByIdAndUpdate(_id: string, item: Partial<T>) {
+    return await this.model.findByIdAndUpdate(
+      _id,
+      { $set: item } as UpdateWithAggregationPipeline | UpdateQuery<T>,
+      { new: true }
+    );
+  }
+
+  async findOneAndUpdate(
+    fields: Partial<T>,
+    item: Partial<T>,
+    options?: mongoose.QueryOptions
+  ) {
+    return await this.model.findOneAndUpdate(
+      fields,
+      { $set: item } as UpdateWithAggregationPipeline | UpdateQuery<T>,
+      { ...options, new: true }
+    );
+  }
+
+  async findOneAndDelete(item: Partial<T>) {
+    return await this.model.findOneAndDelete(item);
   }
 
   // async update(id: number, item: T): Promise<T | null> {
