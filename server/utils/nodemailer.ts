@@ -47,4 +47,33 @@ export default class Mailer {
 
     await this.transporter.sendMail(mailOptions);
   }
+
+  async forgotPasswordMailTemplate({
+    name,
+    email,
+    token,
+  }: {
+    name: string;
+    email: string;
+    token: string;
+  }) {
+    const mailOptions = {
+      from: "darakjikarim@gmail.com", // sender address
+      to: email, // list of receivers
+      subject: "Forgot Password",
+      html: `
+            <p>Hello ${name}</p>
+            <br/>
+            <p>To retrieve your password, please click this link: </p>
+            <br/>
+            <a href="${process.env.CLIENT_URL}reset-password?token=${token}">${process.env.CLIENT_URL}reset-password?token=${token}</a>
+            <br/>
+            <p>Cheers,</p>
+            <br/>
+            <p>Twitter Clone Team</p>
+            `,
+    };
+
+    await this.transporter.sendMail(mailOptions);
+  }
 }

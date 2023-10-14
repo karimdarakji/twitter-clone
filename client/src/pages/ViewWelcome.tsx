@@ -25,6 +25,11 @@ export default function Welcome() {
           User successfully activated, please sign in
         </CustomAlert>
       )}
+      {location.state?.resetPassword && (
+        <CustomAlert id={`reset-password-${Date.now()}`} severity="success">
+          Password successfully changed, please sign in
+        </CustomAlert>
+      )}
       <Grid container height={"100vh"}>
         <Grid
           item

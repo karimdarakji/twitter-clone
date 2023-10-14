@@ -1,4 +1,5 @@
 import mongoose, { UpdateQuery, UpdateWithAggregationPipeline } from "mongoose";
+
 export default abstract class BaseRepository<T> {
   constructor(protected model: mongoose.Model<T>) {}
   // async findAll(options?: FindOptions): Promise<T[]> {
@@ -9,7 +10,7 @@ export default abstract class BaseRepository<T> {
     return await this.model.findById(id);
   }
 
-  async findOne(fields: Partial<T>): Promise<T | null> {
+  async findOne(fields: MongoDBQuery<T>): Promise<T | null> {
     return await this.model.findOne(fields);
   }
 

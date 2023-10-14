@@ -8,7 +8,7 @@ export default abstract class Service<T> {
     return await this.repository.findById(id);
   }
 
-  async findOne(fields: Partial<T>): Promise<T | null> {
+  async findOne(fields: MongoDBQuery<T>): Promise<T | null> {
     return await this.repository.findOne(fields);
   }
 

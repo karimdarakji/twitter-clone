@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useActivateUserMutation } from "../redux/auth/authApi";
 
 const ViewUserActivation = () => {
@@ -21,7 +21,6 @@ const ViewUserActivation = () => {
       })
         .unwrap()
         .then(() => {
-          console.log("hereeeeee");
           navigate("/", {
             state: {
               userActivated: true,

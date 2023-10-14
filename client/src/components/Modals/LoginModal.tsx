@@ -6,13 +6,16 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ModalHeader from "./HeaderModal";
 import GoogleButton from "../Buttons/GoogleButton";
 import CustomButton from "../CustomButton";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useLoginMutation } from "../../redux/auth/authApi";
+import {
+  useForgotPasswordMutation,
+  useLoginMutation,
+} from "../../redux/auth/authApi";
 import { useNavigate } from "react-router-dom";
 import CustomAlert from "../Alert";
 
@@ -25,6 +28,8 @@ interface ILoginModal {
 const LoginModal = ({ open = false, onHide, showSignup }: ILoginModal) => {
   const navigate = useNavigate();
   const [loginMutation, { error }] = useLoginMutation();
+  const [forgotPasswordMutation, { error: forgotPasswordError, isSuccess }] =
+    useForgotPasswordMutation();
   const [LoginModal, setLoginModal] = useState({
     oauth: true,
     auth: false,
@@ -49,21 +54,31 @@ const LoginModal = ({ open = false, onHide, showSignup }: ILoginModal) => {
     },
   });
 
+  const onClose = () => {
+    formik.resetForm();
+    setLoginModal({ oauth: true, auth: false });
+    onHide();
+  };
+
+  useEffect(() => {
+    if (isSuccess) {
+      onClose();
+    }
+  }, [isSuccess]);
   return (
     <>
-      {error?.data?.message && (
+      {(error?.data?.message || forgotPasswordError?.data?.message) && (
         <CustomAlert id={`error-${Date.now()}`} severity="error">
-          {error.data.message}
+          {error?.data?.message || forgotPasswordError?.data?.message}
         </CustomAlert>
       )}
-      <Dialog
-        open={open}
-        onClose={() => {
-          formik.resetForm();
-          setLoginModal({ oauth: true, auth: false });
-          onHide();
-        }}
-      >
+      {isSuccess && (
+        <CustomAlert severity="success">
+          An Email has been sent to reset your password, please check your inbox
+          or spam folder!
+        </CustomAlert>
+      )}
+      <Dialog open={open} onClose={onClose}>
         <ModalHeader />
         <DialogContent
           sx={{ width: "32rem", margin: "0 auto", padding: "20px 10rem" }}
@@ -140,7 +155,22 @@ const LoginModal = ({ open = false, onHide, showSignup }: ILoginModal) => {
                 </CustomButton>
                 <br />
                 <br />
-                <CustomButton variant="outlined">Forgot password?</CustomButton>
+                <CustomButton
+                  variant="outlined"
+                  onClick={async () => {
+                    await formik.validateForm();
+                    if (
+                      formik.values.emailorUsername &&
+                      !formik.errors.emailorUsername
+                    ) {
+                      await forgotPasswordMutation({
+                        emailorUsername: formik.values.emailorUsername,
+                      });
+                    }
+                  }}
+                >
+                  Forgot password?
+                </CustomButton>
                 <br />
                 <br />
                 <Typography>
