@@ -19,3 +19,12 @@ export interface ILogin {
 export interface IRefreshTokenApiReturn {
   accessToken: string;
 }
+
+export interface IForgotPassword {
+  emailorUsername: string;
+}
+
+export interface IResetPassword {
+  token: string;
+  password: string;
+}

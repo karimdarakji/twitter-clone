@@ -31,4 +31,16 @@ class ValidationError extends CustomError {
   }
 }
 
-export { NotFoundError, ForbiddenError, UnauthorizedError, ValidationError };
+class BadRequestError extends CustomError {
+  constructor(message = "Bad request") {
+    super(message, 400);
+  }
+}
+
+export {
+  NotFoundError,
+  ForbiddenError,
+  UnauthorizedError,
+  ValidationError,
+  BadRequestError,
+};

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export interface UserActivationDocument extends Document {
+export interface ForgotPasswordDocument extends Document {
   userId: string;
   token: string;
 }
@@ -18,9 +18,9 @@ const createSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now, expires: "1h" }, // this token will be removed after 1 hour
 });
 
-const UserActivation = mongoose.model<UserActivationDocument>(
-  "userActivation",
+const ForgotPassword = mongoose.model<ForgotPasswordDocument>(
+  "forgotPassword",
   createSchema
 );
 
-export default UserActivation;
+export default ForgotPassword;

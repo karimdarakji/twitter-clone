@@ -1,8 +1,10 @@
 import {
   IActivateUser,
   ICreateUser,
+  IForgotPassword,
   ILogin,
   IRefreshTokenApiReturn,
+  IResetPassword,
 } from "../types";
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { BaseQuery } from "../utils";
@@ -57,6 +59,22 @@ export const AuthApi = createApi({
         method: "POST",
       }),
     }),
+    // forgot password
+    forgotPassword: builder.mutation<any, IForgotPassword>({
+      query: (data) => ({
+        url: `auth/forgot-password`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    // reset password
+    resetPassword: builder.mutation<any, IResetPassword>({
+      query: (data) => ({
+        url: `auth/reset-password`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -69,4 +87,6 @@ export const {
   useRefreshTokenMutation,
   useLogoutMutation,
   useGetUserEmailMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
 } = AuthApi;

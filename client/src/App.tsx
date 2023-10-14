@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import PersistLogin from "./components/PersistLogin";
 import NonProtectedRoutes from "./components/NonProtectedRoutes";
-import { UserActivation, Home, Profile, Welcome } from "./pages";
+import { UserActivation, Home, Profile, Welcome, ResetPassword } from "./pages";
 import TweetPage from "./pages/Tweet";
 import SidebarLayout from "./components/Layouts/SidebarLayout";
 import useAuth from "./hooks/useAuth";
@@ -27,6 +27,7 @@ export default function App() {
           )}
           <Route element={<NonProtectedRoutes />}>
             <Route path="/activate" element={<UserActivation />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/" element={<Welcome />} />
           </Route>
 

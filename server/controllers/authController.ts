@@ -10,26 +10,30 @@ import {
   setAccessToken,
   setRefreshToken,
 } from "../utils/authenticate";
-import AccountsActivation from "../models/UserActivation";
 import { NextFunction, Request, Response } from "express";
 import User from "../models/User";
 import UserActivationService from "../services/userActivationService";
 import AuthService from "../services/authService";
 import { OAuth2Client } from "google-auth-library";
 import {
+  BadRequestError,
   ForbiddenError,
   NotFoundError,
+  UnauthorizedError,
   ValidationError,
 } from "../utils/errors";
 import Mailer from "../utils/nodemailer";
+import ForgotPasswordService from "../services/forgotPasswordService";
 const mailer = new Mailer();
 
 export default class AuthController {
   private authService;
   private userActivationService;
+  private forgotPasswordService;
   constructor() {
     this.authService = new AuthService();
     this.userActivationService = new UserActivationService();
+    this.forgotPasswordService = new ForgotPasswordService();
   }
 
   create = async (req: Request, res: Response, next: NextFunction) => {
@@ -261,71 +265,148 @@ export default class AuthController {
       next(error);
     }
   };
-}
 
-export const handleRefreshToken = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const cookies = req.cookies;
-  // if cookie with name jwt is not found
-  if (!cookies.jwt) return res.sendStatus(401);
+  handleRefreshToken = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const cookies = req.cookies;
+      // if cookie with name jwt is not found
+      if (!cookies.jwt) {
+        return res.sendStatus(401);
+      }
 
-  const refreshToken = cookies.jwt;
-  res.clearCookie("jwt", cookieConfig);
+      const refreshToken = cookies.jwt;
+      res.clearCookie("jwt", cookieConfig);
 
-  const foundUser = await User.findOne({ refreshToken }).exec();
+      const foundUser = await this.authService.findOne({ refreshToken });
 
-  // Detected refresh token reuse!
-  if (!foundUser) {
-    jwt.verify(
-      refreshToken,
-      process.env.REFRESH_TOKEN_SECRET ?? "",
-      async (err: any, decoded: any) => {
-        if (err) return res.sendStatus(403); //Forbidden
-        const hackedUser = await User.findOne({
-          username: decoded.username,
-        });
-        if (hackedUser) {
-          hackedUser.refreshToken = [];
-          await hackedUser.save();
+      // Detected refresh token reuse!
+      if (!foundUser) {
+        jwt.verify(
+          refreshToken,
+          process.env.REFRESH_TOKEN_SECRET ?? "",
+          async (err: any, decoded: any) => {
+            if (err) {
+              return res.sendStatus(403);
+            }
+            const hackedUser = await this.authService.findOneAndUpdate(
+              { username: decoded.username },
+              {
+                refreshToken: [],
+              }
+            );
+            if (!hackedUser) {
+              return res.sendStatus(403);
+            }
+          }
+        );
+        return;
+      }
+
+      // remove refresh token from array in mongodb
+      const newRefreshTokenArray = foundUser.refreshToken.filter(
+        (rt: string) => rt !== refreshToken
+      );
+
+      // evaluate jwt
+      jwt.verify(
+        refreshToken,
+        process.env.REFRESH_TOKEN_SECRET ?? "",
+        async (err: any, decoded: any) => {
+          if (err) {
+            foundUser.refreshToken = [...refreshToken];
+            await foundUser.save();
+          }
+          if (err || foundUser.username !== decoded.username) {
+            return res.sendStatus(403);
+          }
+
+          // Refresh token was still valid
+          const accessToken = setAccessToken(decoded.username);
+
+          const newRefreshToken = setRefreshToken(foundUser.username);
+
+          // save refreshToken with current user
+          await this.authService.findByIdAndUpdate(foundUser._id, {
+            refreshToken: [...newRefreshTokenArray, newRefreshToken],
+          });
+
+          // Creates Secure Cookie with refresh Token
+          res.cookie("jwt", newRefreshToken, cookieConfig);
+          res.json({ accessToken });
         }
-        return res.sendStatus(403); //Forbidden
-      }
-    );
-    return;
-  }
-
-  // remove refresh token from array in mongodb
-  const newRefreshTokenArray = foundUser.refreshToken.filter(
-    (rt: string) => rt !== refreshToken
-  );
-
-  // evaluate jwt
-  jwt.verify(
-    refreshToken,
-    process.env.REFRESH_TOKEN_SECRET ?? "",
-    async (err: any, decoded: any) => {
-      if (err) {
-        foundUser.refreshToken = [...refreshToken];
-        await foundUser.save();
-      }
-      if (err || foundUser.username !== decoded.username)
-        return res.sendStatus(403);
-
-      // Refresh token was still valid
-      const accessToken = setAccessToken(decoded.username);
-
-      const newRefreshToken = setRefreshToken(foundUser.username);
-
-      // save refreshToken with current user
-      foundUser.refreshToken = [...newRefreshTokenArray, newRefreshToken];
-      await foundUser.save();
-
-      // Creates Secure Cookie with refresh Token
-      res.cookie("jwt", newRefreshToken, cookieConfig);
-      res.json({ accessToken });
+      );
+    } catch (error) {
+      next(error);
     }
-  );
-};
+  };
+
+  forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { emailorUsername } = req.body;
+      const foundUser = await this.authService.findOne({
+        $or: [{ email: emailorUsername }, { username: emailorUsername }],
+      });
+      if (!foundUser) {
+        throw new NotFoundError("User not found!");
+      }
+      const token = crypto.randomBytes(32).toString("hex");
+
+      await this.forgotPasswordService.create({
+        userId: foundUser._id,
+        token: token,
+      });
+
+      await mailer.forgotPasswordMailTemplate({
+        name: foundUser.name,
+        email: foundUser.email,
+        token,
+      });
+
+      res.status(200).json("Password reset email sent.");
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { token, password } = req.body;
+
+      const forgotPasswordEntry = await this.forgotPasswordService.findOne({
+        token,
+      });
+
+      if (!forgotPasswordEntry) {
+        throw new BadRequestError("Invnalid or expired token");
+      }
+
+      const user = await this.authService.findById(forgotPasswordEntry.userId);
+      const checkPassword = await bcrypt.compare(
+        password,
+        user?.password as string
+      );
+      if (checkPassword) {
+        throw new ForbiddenError("Don't use your old password.");
+      }
+      // hash password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      await this.authService.findByIdAndUpdate(forgotPasswordEntry.userId, {
+        password: hashedPassword,
+      });
+
+      // delete the token after use
+      await this.forgotPasswordService.findOneAndDelete({
+        userId: forgotPasswordEntry.userId,
+      });
+
+      return res.status(200).json("Password successfully reset.");
+    } catch (error) {
+      next(error);
+    }
+  };
+}
