@@ -19,7 +19,6 @@ import {
   BadRequestError,
   ForbiddenError,
   NotFoundError,
-  UnauthorizedError,
   ValidationError,
 } from "../utils/errors";
 import Mailer from "../utils/nodemailer";
@@ -27,9 +26,9 @@ import ForgotPasswordService from "../services/forgotPasswordService";
 const mailer = new Mailer();
 
 export default class AuthController {
-  private authService;
-  private userActivationService;
-  private forgotPasswordService;
+  private authService: AuthService;
+  private userActivationService: UserActivationService;
+  private forgotPasswordService: ForgotPasswordService;
   constructor() {
     this.authService = new AuthService();
     this.userActivationService = new UserActivationService();
@@ -51,7 +50,7 @@ export default class AuthController {
 
     const userFromBody = {
       ...req.body,
-      image: "",
+      image: `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/default.png`,
     };
 
     try {
@@ -147,7 +146,7 @@ export default class AuthController {
           name: payload?.name,
           email: payload?.email,
           username: payload?.email,
-          image: payload?.picture,
+          image: `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/default.png`,
           password: "",
           active: 1,
         });
@@ -325,9 +324,12 @@ export default class AuthController {
           }
 
           // Refresh token was still valid
-          const accessToken = setAccessToken(decoded.username);
+          const accessToken = setAccessToken(decoded.userId, decoded.username);
 
-          const newRefreshToken = setRefreshToken(foundUser.username);
+          const newRefreshToken = setRefreshToken(
+            foundUser._id,
+            foundUser.username
+          );
 
           // save refreshToken with current user
           await this.authService.findByIdAndUpdate(foundUser._id, {
