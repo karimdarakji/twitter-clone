@@ -7,9 +7,8 @@ import path from "path";
 
 import AuthRoutes from "./routes/authRoute";
 import UserRoutes from "./routes/userRoute";
-//import TweetsRoutes from "./routes/tweets.js";
+import TweetRoutes from "./routes/tweetRoute";
 
-import "dotenv/config";
 import { verifyJWT } from "./middleware/verifyJWT";
 import { corsOptions } from "./config/corsOptions";
 import { credentials } from "./middleware/credentials";
@@ -37,14 +36,13 @@ app.use(cookieParser());
 
 // serve static files
 app.use("/", express.static(path.join(__dirname, "/public")));
-//app.use(express.static(__dirname + "/media"));
 
 // API Routes
 app.use("/api/auth", AuthRoutes);
-app.use("/api", UserRoutes);
 
 app.use(verifyJWT);
-//app.use("/api/tweets", TweetsRoutes);
+app.use("/api", UserRoutes);
+app.use("/api/tweets", TweetRoutes);
 
 // Error middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

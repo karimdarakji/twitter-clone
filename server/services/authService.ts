@@ -46,8 +46,8 @@ export default class AuthService extends Service<UserDocument> {
     }
 
     // create JWTs
-    const accessToken = setAccessToken(foundUser.username);
-    const newRefreshToken = setRefreshToken(foundUser.username);
+    const accessToken = setAccessToken(foundUser._id, foundUser.username);
+    const newRefreshToken = setRefreshToken(foundUser._id, foundUser.username);
 
     // Refresh token logic
     let newRefreshTokenArray = !currentRefreshToken
