@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import BaseRepository from "../repositories/baseRepository";
+import { MongoDBQuery } from "types";
 
 export default abstract class Service<T> {
   constructor(protected repository: BaseRepository<T>) {}

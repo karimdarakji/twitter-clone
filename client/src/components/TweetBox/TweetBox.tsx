@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Box,
   Avatar,
@@ -6,6 +6,7 @@ import {
   TextField,
   IconButton,
   Hidden,
+  Grid,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { RiFileGifLine, RiImage2Line } from "react-icons/ri";
@@ -13,81 +14,50 @@ import "./TweetBox.scss";
 import CustomButton from "../CustomButton";
 import { useTweetMutation } from "../../redux/tweet";
 import { IoCloseCircleOutline } from "react-icons/io5";
+import CustomAlert from "../Alert";
 
 interface ITweetBox {
   user: IUser;
 }
 
-type Preview = {
+interface MediaFile {
+  file: File;
   url: string;
-  type: "image" | "video";
-};
+  type: string;
+}
 
 const TweetBox = ({ user }: ITweetBox) => {
   const navigate = useNavigate();
-  const [tweetContent, setTweetContent] = useState<{
-    text: string;
-    images: File[];
-    videos: File[];
-    gifs: File[];
-  }>({
-    text: "",
-    images: [],
-    videos: [],
-    gifs: [],
-  });
-
-  const [previews, setPreviews] = useState<Preview[]>([]);
+  const [tweetContent, setTweetContent] = useState({ text: "" });
+  const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [tweetMutation, { error, isLoading, isSuccess }] = useTweetMutation();
 
   const handleFilesSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const images: File[] = [];
-      const videos: File[] = [];
-      const newPreviews: Preview[] = [];
+    if (!e.target.files || mediaFiles.length === 2) return;
 
-      Array.from(e.target.files).forEach((file) => {
-        const blobUrl = URL.createObjectURL(file);
-
-        if (file.type.startsWith("image/")) {
-          images.push(file);
-          newPreviews.push({ url: blobUrl, type: "image" });
-        } else if (file.type.startsWith("video/")) {
-          videos.push(file);
-          newPreviews.push({ url: blobUrl, type: "video" });
-        }
-      });
-
-      setPreviews((prev) => [...prev, ...newPreviews]);
-
-      setTweetContent((content) => ({
-        ...content,
-        images: [...content.images, ...images],
-        videos: [...content.videos, ...videos],
+    const newFiles = Array.from(e.target.files)
+      .filter(
+        (file) =>
+          file.type.startsWith("image/") || file.type.startsWith("video/")
+      )
+      .map((file) => ({
+        file,
+        url: URL.createObjectURL(file),
+        type: file.type.startsWith("image/") ? "image" : "video",
       }));
-    }
+
+    setMediaFiles((prev) => [...prev, ...newFiles]);
+    e.target.value = "";
   };
 
   const removeFile = (index: number) => {
-    const fileToRemove = previews[index];
-    // Revoke the blob URL
-    URL.revokeObjectURL(fileToRemove.url);
-    setPreviews((prev) => prev.filter((_, idx) => idx !== index));
-
-    setTweetContent((content) => ({
-      ...content,
-      images:
-        fileToRemove.type === "image"
-          ? content.images.filter((_, idx) => idx !== index)
-          : content.images,
-      videos:
-        fileToRemove.type === "video"
-          ? content.videos.filter((_, idx) => idx !== index)
-          : content.videos,
-    }));
+    setMediaFiles((prev) => {
+      const updatedFiles = prev.filter((_, idx) => idx !== index);
+      URL.revokeObjectURL(prev[index].url); // Clean up the revoked URL
+      return updatedFiles;
+    });
   };
-
-  const [tweetMutation, { error, isLoading }] = useTweetMutation();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -103,78 +73,120 @@ const TweetBox = ({ user }: ITweetBox) => {
 
   const tweet = async () => {
     const formData = new FormData();
-    formData.append("text", tweetContent.text as string);
+    formData.append("text", tweetContent.text);
 
-    tweetContent.images.forEach((img) => formData.append("images", img));
-    tweetContent.videos.forEach((vid) => formData.append("videos", vid));
+    // Append media files to the form data
+    mediaFiles.forEach((mediaFile) => {
+      // You could add conditions here based on the media type if needed
+      switch (mediaFile.type) {
+        case "image":
+          formData.append("images", mediaFile.file);
+          break;
+        case "video":
+          formData.append("videos", mediaFile.file);
+          break;
+        default:
+          break;
+      }
+    });
+
+    // Here, call the function to send the request, passing in the prepared form data
     await tweetMutation(formData);
   };
 
+  useEffect(() => {
+    if (isSuccess && !isLoading) {
+      setMediaFiles([]);
+      setTweetContent({ text: "" });
+    }
+  }, [isSuccess, isLoading]);
+
   return (
-    <Box className={"tweetBox"}>
-      <Avatar
-        sx={{ marginRight: ".5rem", cursor: "pointer" }}
-        src={user.image}
-        onClick={() => navigate(`/${user.username}`)}
-      />
-      <Stack justifyContent={"center"} width={"80%"}>
-        <TextField
-          className="input"
-          placeholder="What's happening?!"
-          variant="standard"
-          multiline
-          value={tweetContent.text}
-          maxRows={6}
-          inputProps={{ maxLength: 200 }}
-          onChange={handleChange}
+    <>
+      {(error || error?.data?.message) && (
+        <CustomAlert id={`error-${Date.now()}`} severity="error">
+          {error?.data?.message || error}
+        </CustomAlert>
+      )}
+      {isSuccess && (
+        <CustomAlert id={`success-${Date.now()}`} severity="success">
+          Your tweet has been saved!
+        </CustomAlert>
+      )}
+      <Box className={"tweetBox"}>
+        <Avatar
+          sx={{ marginRight: ".5rem", cursor: "pointer" }}
+          src={user.image}
+          onClick={() => navigate(`/${user.username}`)}
         />
-        <div className="media-preview">
-          {previews.map((preview, index) => (
-            <div key={index} className="media-item">
-              {preview.type === "image" ? (
-                <img src={preview.url} alt="preview" width="100" height="100" />
-              ) : (
-                <video width="200" height="200" controls>
-                  <source src={preview.url} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              )}
-              <IconButton
-                className="remove-button"
-                onClick={() => removeFile(index)}
-              >
-                <IoCloseCircleOutline />
-              </IconButton>
-            </div>
-          ))}
-        </div>
-        <br />
-        <Box display={"flex"}>
-          <input
-            type="file"
-            accept="video/*,image/*"
-            multiple
-            onChange={handleFilesSelect}
-            ref={fileInputRef}
-            style={{ display: "none" }}
+        <Stack justifyContent={"center"} width={"80%"}>
+          <TextField
+            className="input"
+            placeholder="What's happening?!"
+            variant="standard"
+            multiline
+            value={tweetContent.text}
+            maxRows={6}
+            inputProps={{ maxLength: 200 }}
+            onChange={handleChange}
           />
-          <IconButton onClick={() => fileInputRef.current?.click()}>
-            <RiImage2Line />
-          </IconButton>
-          <IconButton>
-            <RiFileGifLine />
-          </IconButton>
-          <CustomButton
-            width={"5rem"}
-            sx={{ padding: 0, marginLeft: "auto" }}
-            disabled={!tweetContent.text || isLoading}
-            onClick={tweet}
-          >
-            Tweet
-          </CustomButton>
-        </Box>
-      </Stack>
-    </Box>
+          <Box className="media-preview">
+            {mediaFiles.map((preview, index) => (
+              <Grid
+                key={`preview-${preview.type}-${index}`}
+                className="media-item"
+              >
+                {preview.type === "image" ? (
+                  <img
+                    src={preview.url}
+                    style={{ objectFit: "contain" }}
+                    alt="preview"
+                    width="200"
+                    height="200"
+                  />
+                ) : (
+                  <video width="200" height="200" controls>
+                    <source src={preview.url} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                )}
+                <IconButton
+                  className="remove-button"
+                  onClick={() => removeFile(index)}
+                >
+                  <IoCloseCircleOutline />
+                </IconButton>
+              </Grid>
+            ))}
+          </Box>
+          <br />
+          <Box display={"flex"}>
+            <input
+              type="file"
+              accept="video/*,image/*"
+              multiple
+              onChange={handleFilesSelect}
+              ref={fileInputRef}
+              hidden
+            />
+            <IconButton onClick={() => fileInputRef.current?.click()}>
+              <RiImage2Line />
+            </IconButton>
+            <IconButton>
+              <RiFileGifLine />
+            </IconButton>
+            <CustomButton
+              width={"5rem"}
+              sx={{ padding: 0, marginLeft: "auto" }}
+              disabled={!tweetContent.text || isLoading}
+              onClick={tweet}
+            >
+              Tweet
+            </CustomButton>
+          </Box>
+        </Stack>
+      </Box>
+    </>
   );
 };
 

@@ -54,7 +54,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   }
 
   // For CustomErrors, use the provided message and status code.
-  res.status(err.statusCode).json({ message: err.message });
+  return res.status(err.statusCode).json({ message: err.message });
 });
 
 mongoose
