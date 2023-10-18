@@ -1,4 +1,5 @@
 import mongoose, { UpdateQuery, UpdateWithAggregationPipeline } from "mongoose";
+import { MongoDBQuery } from "types";
 
 export default abstract class BaseRepository<T> {
   constructor(protected model: mongoose.Model<T>) {}

@@ -12,4 +12,4 @@ export const BaseQuery = fetchBaseQuery({
     return headers;
   },
   credentials: "include",
-});
+}) as any;

@@ -37,10 +37,17 @@ class BadRequestError extends CustomError {
   }
 }
 
+class InternalError extends CustomError {
+  constructor(message = "Internal server error") {
+    super(message, 500);
+  }
+}
+
 export {
   NotFoundError,
   ForbiddenError,
   UnauthorizedError,
   ValidationError,
   BadRequestError,
+  InternalError,
 };

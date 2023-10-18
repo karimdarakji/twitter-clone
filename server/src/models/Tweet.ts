@@ -26,6 +26,7 @@ const tweetSchema = new Schema(
       text: {
         type: String,
         maxlength: 280, // Twitter's max character count, adjust as needed
+        required: true,
       },
       images: [
         {
